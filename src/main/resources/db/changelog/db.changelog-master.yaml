@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Sergio Martin Rubio
+      changes:
+        - createTable:
+            tableName: transaction
+            columns:
+              - column:
+                  name: reference
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
