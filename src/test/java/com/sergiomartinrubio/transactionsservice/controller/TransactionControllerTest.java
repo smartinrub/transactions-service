@@ -1,5 +1,6 @@
 package com.sergiomartinrubio.transactionsservice.controller;
 
+import com.sergiomartinrubio.transactionsservice.exception.TransactionNotFoundException;
 import com.sergiomartinrubio.transactionsservice.model.Channel;
 import com.sergiomartinrubio.transactionsservice.model.Status;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
@@ -91,6 +92,17 @@ class TransactionControllerTest {
 
         // THEN
         assertThat(result.getResponse().getContentAsString()).isEqualTo(responseBody);
+    }
+
+    @Test
+    public void givenTransactionNotFoundWhenGetRequestToTransactionsThenReturnNotFound() throws Exception {
+        // GIVEN
+        when(transactionService.searchTransaction(ACCOUNT_IBAN)).thenThrow(TransactionNotFoundException.class);
+
+        // WHEN
+        mockMvc.perform(get("/transactions/ibans/" + ACCOUNT_IBAN))
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 
     @Test
