@@ -1,6 +1,9 @@
 package com.sergiomartinrubio.transactionsservice.controller;
 
+import com.sergiomartinrubio.transactionsservice.model.Channel;
+import com.sergiomartinrubio.transactionsservice.model.Status;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
+import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.service.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +50,12 @@ class TransactionControllerTest {
     @Test
     public void givenTransactionWhenPostRequestToTransactionsThenCreateTransactionIsCalledAndReturnCreated() throws Exception {
         // GIVEN
-        String requestBody = "{\"reference\":\"12345A\",\"accountIban\":\"ES9820385778983000760236\",\"date\":\"2019-07-16T16:55:42.000Z\",\"amount\":193.38,\"fee\":3.18,\"description\":\"Restaurant payment\"}";
+        String requestBody = "{\"reference\":\"12345A\"," +
+                "\"accountIban\":\"ES9820385778983000760236\"," +
+                "\"date\":\"2019-07-16T16:55:42.000Z\"," +
+                "\"amount\":193.38," +
+                "\"fee\":3.18," +
+                "\"description\":\"Restaurant payment\"}";
 
         // WHEN
         mockMvc.perform(post("/transactions")
@@ -63,11 +71,44 @@ class TransactionControllerTest {
     @Test
     public void givenAccountIbanWhenGetRequestToTransactionsThenReturnTransaction() throws Exception {
         // GIVEN
-        String responseBody = "{\"reference\":\"12345A\",\"accountIban\":\"ES9820385778983000760236\",\"date\":\"2019-07-16T16:55:42.000Z\",\"amount\":193.38,\"fee\":3.18,\"description\":\"Restaurant payment\"}";
+        String responseBody = "{\"reference\":\"12345A\"," +
+                "\"accountIban\":\"ES9820385778983000760236\"," +
+                "\"date\":\"2019-07-16T16:55:42.000Z\"," +
+                "\"amount\":193.38," +
+                "\"fee\":3.18," +
+                "\"description\":\"Restaurant payment\"}";
         when(transactionService.searchTransaction(ACCOUNT_IBAN)).thenReturn(TRANSACTION);
 
         // WHEN
         MvcResult result = mockMvc.perform(get("/transactions/ibans/" + ACCOUNT_IBAN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // THEN
+        assertThat(result.getResponse().getContentAsString()).isEqualTo(responseBody);
+    }
+
+    @Test
+    public void givenReferenceAndChannelWhenGetTransactionStatusThenReturnTransactionStatus() throws Exception {
+        // GIVEN
+        String responseBody = "{" +
+                "\"reference\":\"12345A\"," +
+                "\"status\":\"PENDING\"," +
+                "\"amount\":193.38," +
+                "\"fee\":3.18" +
+                "}";
+        TransactionStatus transactionStatus = TransactionStatus.builder()
+                .reference(TRANSACTION_REFERENCE)
+                .status(Status.PENDING)
+                .amount(AMOUNT)
+                .fee(FEE)
+                .build();
+        when(transactionService.getTransactionStatus(TRANSACTION_REFERENCE, Channel.CLIENT)).thenReturn(transactionStatus);
+
+        // WHEN
+        MvcResult result = mockMvc
+                .perform(get("/transactions/" + TRANSACTION_REFERENCE + "/status?channel=" + Channel.CLIENT))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();

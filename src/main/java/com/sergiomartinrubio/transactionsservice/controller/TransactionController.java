@@ -32,6 +32,6 @@ public class TransactionController {
     @GetMapping("/transactions/{reference}/status")
     public TransactionStatus getTransactionStatus(@PathVariable("reference") String reference,
                                                   @RequestParam("channel") Channel channel) {
-        return new TransactionStatus("XXXXXX", Status.INVALID);
+        return transactionService.getTransactionStatus(reference, channel);
     }
 }
