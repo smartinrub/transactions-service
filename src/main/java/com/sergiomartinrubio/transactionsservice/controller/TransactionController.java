@@ -36,7 +36,7 @@ public class TransactionController {
     // we will not following REST principles, because POST is not for idempotent requests
     @GetMapping("/transactions/{reference}/status")
     public TransactionStatus getTransactionStatus(@PathVariable("reference") UUID reference,
-                                                  @RequestParam("channel") Channel channel) {
+                                                  @RequestParam(value = "channel", required = false) Channel channel) {
         return transactionService.getTransactionStatus(reference, channel);
     }
 }
