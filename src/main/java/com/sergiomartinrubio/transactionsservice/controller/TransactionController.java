@@ -1,12 +1,15 @@
 package com.sergiomartinrubio.transactionsservice.controller;
 
-import com.sergiomartinrubio.transactionsservice.model.*;
+import com.sergiomartinrubio.transactionsservice.model.Channel;
+import com.sergiomartinrubio.transactionsservice.model.Transaction;
+import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +33,7 @@ public class TransactionController {
     // with a request parameter. If security is a concern we can use POST instead, but again
     // we will not following REST principles, because POST is not for idempotent requests
     @GetMapping("/transactions/{reference}/status")
-    public TransactionStatus getTransactionStatus(@PathVariable("reference") String reference,
+    public TransactionStatus getTransactionStatus(@PathVariable("reference") UUID reference,
                                                   @RequestParam("channel") Channel channel) {
         return transactionService.getTransactionStatus(reference, channel);
     }

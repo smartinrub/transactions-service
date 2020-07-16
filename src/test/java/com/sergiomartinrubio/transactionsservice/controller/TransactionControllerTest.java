@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -29,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TransactionControllerTest {
 
     private static final String ACCOUNT_IBAN = "ES9820385778983000760236";
-    private static final String TRANSACTION_REFERENCE = "12345A";
+    private static final UUID TRANSACTION_REFERENCE = UUID.fromString("f8145c28-4730-4afc-8cf5-11934d94b06f");
     private static final ZonedDateTime DATE = ZonedDateTime.parse("2019-07-16T16:55:42Z")
             .withZoneSameLocal(ZoneId.of("UTC"));
     private static final BigDecimal AMOUNT = new BigDecimal("193.38");
@@ -53,7 +54,7 @@ class TransactionControllerTest {
     @Test
     public void givenTransactionWhenPostRequestToTransactionsThenCreateTransactionIsCalledAndReturnCreated() throws Exception {
         // GIVEN
-        String requestBody = "{\"reference\":\"12345A\"," +
+        String requestBody = "{\"reference\":\"f8145c28-4730-4afc-8cf5-11934d94b06f\"," +
                 "\"accountIban\":\"ES9820385778983000760236\"," +
                 "\"date\":\"2019-07-16T16:55:42Z\"," +
                 "\"amount\":193.38," +
@@ -74,7 +75,7 @@ class TransactionControllerTest {
     @Test
     public void givenAccountIbanWhenGetRequestToTransactionsThenReturnTransaction() throws Exception {
         // GIVEN
-        String responseBody = "{\"reference\":\"12345A\"," +
+        String responseBody = "{\"reference\":\"f8145c28-4730-4afc-8cf5-11934d94b06f\"," +
                 "\"accountIban\":\"ES9820385778983000760236\"," +
                 "\"date\":\"2019-07-16T16:55:42Z\"," +
                 "\"amount\":193.38," +
@@ -96,7 +97,7 @@ class TransactionControllerTest {
     public void givenReferenceAndChannelWhenGetTransactionStatusThenReturnTransactionStatus() throws Exception {
         // GIVEN
         String responseBody = "{" +
-                "\"reference\":\"12345A\"," +
+                "\"reference\":\"f8145c28-4730-4afc-8cf5-11934d94b06f\"," +
                 "\"status\":\"PENDING\"," +
                 "\"amount\":193.38," +
                 "\"fee\":3.18" +

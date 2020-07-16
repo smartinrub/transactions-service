@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -21,7 +22,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class CreateTransactionIntegrationTest {
 
     private static final String ACCOUNT_IBAN = "ES9820385778983000760236";
-    private static final String TRANSACTION_REFERENCE = "12345A";
+    private static final UUID TRANSACTION_REFERENCE = UUID.fromString("f8145c28-4730-4afc-8cf5-11934d94b06f");
     private static final ZonedDateTime DATE = ZonedDateTime.parse("2019-07-16T16:55:42.000Z");
     private static final BigDecimal AMOUNT = new BigDecimal("193.38");
     private static final BigDecimal FEE = new BigDecimal("3.18");

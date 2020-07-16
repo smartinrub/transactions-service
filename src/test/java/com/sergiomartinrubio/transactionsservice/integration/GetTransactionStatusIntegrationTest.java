@@ -8,6 +8,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 
+import java.util.UUID;
+
 import static com.sergiomartinrubio.transactionsservice.model.Channel.CLIENT;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,7 +27,7 @@ class GetTransactionStatusIntegrationTest {
         // WHEN
         ResponseEntity<TransactionStatus> response = restTemplate
                 .getForEntity("http://localhost:" + port +"/transactions/{reference}/status?channel={channel}",
-                        TransactionStatus.class, "XXXXXX", CLIENT);
+                        TransactionStatus.class, UUID.randomUUID(), CLIENT);
 
         // THEN
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
