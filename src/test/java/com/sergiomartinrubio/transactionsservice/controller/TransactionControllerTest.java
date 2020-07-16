@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -28,7 +30,8 @@ class TransactionControllerTest {
 
     private static final String ACCOUNT_IBAN = "ES9820385778983000760236";
     private static final String TRANSACTION_REFERENCE = "12345A";
-    private static final String DATE = "2019-07-16T16:55:42.000Z";
+    private static final ZonedDateTime DATE = ZonedDateTime.parse("2019-07-16T16:55:42Z")
+            .withZoneSameLocal(ZoneId.of("UTC"));
     private static final BigDecimal AMOUNT = new BigDecimal("193.38");
     private static final BigDecimal FEE = new BigDecimal("3.18");
     private static final String DESCRIPTION = "Restaurant payment";
@@ -52,7 +55,7 @@ class TransactionControllerTest {
         // GIVEN
         String requestBody = "{\"reference\":\"12345A\"," +
                 "\"accountIban\":\"ES9820385778983000760236\"," +
-                "\"date\":\"2019-07-16T16:55:42.000Z\"," +
+                "\"date\":\"2019-07-16T16:55:42Z\"," +
                 "\"amount\":193.38," +
                 "\"fee\":3.18," +
                 "\"description\":\"Restaurant payment\"}";
@@ -73,7 +76,7 @@ class TransactionControllerTest {
         // GIVEN
         String responseBody = "{\"reference\":\"12345A\"," +
                 "\"accountIban\":\"ES9820385778983000760236\"," +
-                "\"date\":\"2019-07-16T16:55:42.000Z\"," +
+                "\"date\":\"2019-07-16T16:55:42Z\"," +
                 "\"amount\":193.38," +
                 "\"fee\":3.18," +
                 "\"description\":\"Restaurant payment\"}";

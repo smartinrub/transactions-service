@@ -8,6 +8,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 @Builder
 @Value
@@ -19,7 +20,7 @@ public class Transaction {
     @NotBlank
     private final String accountIban;
 
-    private final String date;
+    private final ZonedDateTime date;
 
     @NotNull
     private final BigDecimal amount;
