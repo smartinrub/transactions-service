@@ -6,6 +6,7 @@ import com.sergiomartinrubio.transactionsservice.model.Status;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
+import com.sergiomartinrubio.transactionsservice.util.TransactionStatusHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final TransactionStatusHelper transactionStatusHelper;
 
     public void createTransaction(Transaction transaction) {
         transactionRepository.save(transaction);
@@ -30,11 +32,6 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findById(reference)
                 .orElseThrow(() -> new TransactionNotFoundException(reference));
 
-        return TransactionStatus.builder()
-                .reference(reference)
-                .status(Status.PENDING)
-                .amount(transaction.getAmount())
-                .fee(transaction.getFee())
-                .build();
+        return transactionStatusHelper.buildTransactionStatus(transaction, channel);
     }
 }

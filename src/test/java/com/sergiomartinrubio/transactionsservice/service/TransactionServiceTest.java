@@ -6,6 +6,7 @@ import com.sergiomartinrubio.transactionsservice.model.Status;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
+import com.sergiomartinrubio.transactionsservice.util.TransactionStatusHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,6 +42,9 @@ class TransactionServiceTest {
 
     @Mock
     private TransactionRepository transactionRepository;
+
+    @Mock
+    private TransactionStatusHelper transactionStatusHelper;
 
     @InjectMocks
     private TransactionService transactionService;
@@ -87,6 +91,7 @@ class TransactionServiceTest {
                 .fee(FEE)
                 .build();
         when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.of(TRANSACTION));
+        when(transactionStatusHelper.buildTransactionStatus(TRANSACTION, Channel.CLIENT)).thenReturn(transactionStatus);
 
         // WHEN
         TransactionStatus result = transactionService.getTransactionStatus(TRANSACTION_REFERENCE, Channel.CLIENT);
