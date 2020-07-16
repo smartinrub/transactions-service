@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -27,14 +26,11 @@ class SearchTransactionIntegrationTest {
     private static final BigDecimal FEE = new BigDecimal("3.18");
     private static final String DESCRIPTION = "Restaurant payment";
 
-    @LocalServerPort
-    private int port;
-
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Test
-    public void whenSearchTransactionsThenReturnCreatedResponseStatus() {
+    void whenSearchTransactionsThenReturnCreatedResponseStatus() {
         // GIVEN
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
@@ -45,12 +41,11 @@ class SearchTransactionIntegrationTest {
                 .description(DESCRIPTION)
                 .build();
         HttpEntity<Transaction> request = new HttpEntity<>(transaction);
-        restTemplate.exchange("http://localhost:" + port + "/transactions", HttpMethod.POST, request, String.class);
+        restTemplate.exchange("/transactions", HttpMethod.POST, request, String.class);
 
         // WHEN
         ResponseEntity<Transaction> response = restTemplate
-                .getForEntity("http://localhost:" + port + "/transactions/ibans/{iban}",
-                        Transaction.class, ACCOUNT_IBAN);
+                .getForEntity("/transactions/ibans/{iban}", Transaction.class, ACCOUNT_IBAN);
 
         // THEN
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -28,14 +27,11 @@ class CreateTransactionIntegrationTest {
     private static final BigDecimal FEE = new BigDecimal("3.18");
     private static final String DESCRIPTION = "Restaurant payment";
 
-    @LocalServerPort
-    private int port;
-
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Test
-    public void givenTransactionWhenPostTransactionsThenReturnCreatedResponseStatus() {
+    void givenTransactionWhenPostTransactionsThenReturnCreatedResponseStatus() {
         // GIVEN
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
@@ -49,14 +45,14 @@ class CreateTransactionIntegrationTest {
 
         // WHEN
         ResponseEntity<String> response = restTemplate
-                .exchange("http://localhost:" + port + "/transactions", HttpMethod.POST, request, String.class);
+                .exchange("/transactions", HttpMethod.POST, request, String.class);
 
         // THEN
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
-    public void givenMissingMandatoryAttributeWhenPostTransactionsThenReturnBadRequestStatus() {
+    void givenMissingMandatoryAttributeWhenPostTransactionsThenReturnBadRequestStatus() {
         // GIVEN
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
@@ -69,7 +65,7 @@ class CreateTransactionIntegrationTest {
 
         // WHEN
         ResponseEntity<String> response = restTemplate
-                .exchange("http://localhost:" + port + "/transactions", HttpMethod.POST, request, String.class);
+                .exchange("/transactions", HttpMethod.POST, request, String.class);
 
         // THEN
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
