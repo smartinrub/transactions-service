@@ -12,12 +12,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class CreateTransactionIntegrationTest {
+
+    private static final String ACCOUNT_IBAN = "ES9820385778983000760236";
+    private static final String TRANSACTION_REFERENCE = "12345A";
+    private static final ZonedDateTime DATE = ZonedDateTime.parse("2019-07-16T16:55:42.000Z");
+    private static final BigDecimal AMOUNT = new BigDecimal("193.38");
+    private static final BigDecimal FEE = new BigDecimal("3.18");
+    private static final String DESCRIPTION = "Restaurant payment";
 
     @LocalServerPort
     private int port;
@@ -29,12 +37,12 @@ class CreateTransactionIntegrationTest {
     public void givenTransactionWhenPostTransactionsThenReturnCreatedResponseStatus() {
         // GIVEN
         Transaction transaction = Transaction.builder()
-                .reference("12345A")
-                .accountIban("ES9820385778983000760236")
-                .date("2019-07-16T16:55:42.000Z")
-                .amount(new BigDecimal("193.38"))
-                .fee(new BigDecimal("3.18"))
-                .description("Restaurant payment")
+                .reference(TRANSACTION_REFERENCE)
+                .accountIban(ACCOUNT_IBAN)
+                .date(DATE)
+                .amount(AMOUNT)
+                .fee(FEE)
+                .description(DESCRIPTION)
                 .build();
         HttpEntity<Transaction> request = new HttpEntity<>(transaction);
 
@@ -50,11 +58,11 @@ class CreateTransactionIntegrationTest {
     public void givenMissingMandatoryAttributeWhenPostTransactionsThenReturnBadRequestStatus() {
         // GIVEN
         Transaction transaction = Transaction.builder()
-                .reference("12345A")
-                .date("2019-07-16T16:55:42.000Z")
-                .amount(new BigDecimal("193.38"))
-                .fee(new BigDecimal("3.18"))
-                .description("Restaurant payment")
+                .reference(TRANSACTION_REFERENCE)
+                .date(DATE)
+                .amount(AMOUNT)
+                .fee(FEE)
+                .description(DESCRIPTION)
                 .build();
         HttpEntity<Transaction> request = new HttpEntity<>(transaction);
 
