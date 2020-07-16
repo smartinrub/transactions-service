@@ -2,13 +2,13 @@ package com.sergiomartinrubio.transactionsservice.service;
 
 import com.sergiomartinrubio.transactionsservice.exception.TransactionNotFoundException;
 import com.sergiomartinrubio.transactionsservice.model.Channel;
+import com.sergiomartinrubio.transactionsservice.model.Status;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,14 +22,19 @@ public class TransactionService {
     }
 
     public Transaction searchTransaction(String accountIban) {
-        Optional<Transaction> transaction = transactionRepository.searchTransaction(accountIban);
-        if (transaction.isEmpty()) {
-            throw new TransactionNotFoundException(accountIban);
-        }
-        return transaction.get();
+        return transactionRepository.searchTransaction(accountIban)
+                .orElseThrow(() -> new TransactionNotFoundException(accountIban));
     }
 
     public TransactionStatus getTransactionStatus(UUID reference, Channel channel) {
-        return null;
+        Transaction transaction = transactionRepository.findById(reference)
+                .orElseThrow(() -> new TransactionNotFoundException(reference));
+
+        return TransactionStatus.builder()
+                .reference(reference)
+                .status(Status.PENDING)
+                .amount(transaction.getAmount())
+                .fee(transaction.getFee())
+                .build();
     }
 }
