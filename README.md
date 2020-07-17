@@ -56,6 +56,16 @@ curl -X POST -H "Content-Type: application/json" http://localhost:8080/transacti
 HTTP/1.1 201
 ```
 
+if account not found:
+```
+HTTP/1.1 404
+```
+
+if invalid transaction:
+```
+HTTP/1.1 422
+```
+
 ### Search Transaction
 
 - Request
@@ -68,14 +78,14 @@ curl -X GET http://localhost:8080/transactions/ibans/ES9820385778983000760236
 
 ```
 HTTP/1.1 200
-{
+[{
   "reference": "12345A",
   "accountIban": "ES9820385778983000760236",
   "date": "2019-07-16T16:55:42.000Z",
   "amount": 193.38,
   "fee": 3.18,
   "description": "Restaurant payment"
-}
+}]
 ```
 
 ### Get Transaction Status
