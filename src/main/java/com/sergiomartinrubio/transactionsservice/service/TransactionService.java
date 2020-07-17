@@ -44,10 +44,12 @@ public class TransactionService {
             transaction.setReference(UUID.randomUUID());
         }
 
+        // we assume that if the date is not set we want to use the current date
         if (transaction.getDate() == null) {
             transaction.setDate(ZonedDateTime.now());
         }
         transactionRepository.save(transaction);
+        // we assume we want to update the account balance for every successful transaction
         accountRepository.updateBalance(finalBalance, transaction.getAccountIban());
     }
 
