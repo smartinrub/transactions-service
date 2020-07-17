@@ -10,6 +10,7 @@ import com.sergiomartinrubio.transactionsservice.util.TransactionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -24,8 +25,20 @@ public class TransactionService {
     private final TransactionStatusHelper transactionStatusHelper;
     private final AccountRepository accountRepository;
 
+    @Transactional
     public void createTransaction(Transaction transaction) {
-        validateTransaction(transaction);
+        if (transactionRepository.findById(transaction.getReference()).isPresent()) {
+            throw new InvalidTransactionException(transaction.getReference());
+        }
+
+        // we don't want to save transaction for account that do not exist
+        Account account = accountRepository.findById(transaction.getAccountIban())
+                .orElseThrow(() -> new AccountNotFoundException(transaction.getAccountIban()));
+
+        BigDecimal finalBalance = TransactionUtils.getFinalBalance(transaction, account);
+        if (finalBalance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new InvalidTransactionException(finalBalance, transaction.getReference());
+        }
 
         if (transaction.getReference() == null) {
             transaction.setReference(UUID.randomUUID());
@@ -35,6 +48,7 @@ public class TransactionService {
             transaction.setDate(ZonedDateTime.now());
         }
         transactionRepository.save(transaction);
+        accountRepository.updateBalance(finalBalance, transaction.getAccountIban());
     }
 
     public List<Transaction> searchTransaction(String accountIban) {
@@ -50,17 +64,6 @@ public class TransactionService {
         }
 
         return transactionStatusHelper.buildTransactionStatus(transaction.get(), channel);
-    }
-
-    private void validateTransaction(Transaction transaction) {
-        // we don't want to save transaction for account that do not exist
-        Account account = accountRepository.findById(transaction.getAccountIban())
-                .orElseThrow(() -> new AccountNotFoundException(transaction.getAccountIban()));
-
-        BigDecimal finalBalance = TransactionUtils.getFinalBalance(transaction, account);
-        if (finalBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new InvalidTransactionException(finalBalance, transaction.getReference());
-        }
     }
 
 }

@@ -67,6 +67,7 @@ class TransactionServiceTest {
     @Test
     void givenAccountNotFoundWhenCreateTransactionThenThrowAccountNotFoundException() {
         // GIVEN
+        when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.empty());
         when(accountRepository.findById(ACCOUNT_IBAN))
                 .thenReturn(Optional.empty());
 
@@ -74,14 +75,13 @@ class TransactionServiceTest {
         // THEN
         assertThatThrownBy(() -> transactionService.createTransaction(TRANSACTION))
                 .isInstanceOf(AccountNotFoundException.class);
-        verifyNoInteractions(transactionRepository);
+        verify(transactionRepository).findById(TRANSACTION_REFERENCE);
+        verifyNoMoreInteractions(transactionRepository);
     }
 
     @Test
     void givenFinalBalanceBelowZeroWhenCreateTransactionThenThrowInvalidTransactionException() {
         // GIVEN
-        when(accountRepository.findById(ACCOUNT_IBAN))
-                .thenReturn(Optional.of(new Account(ACCOUNT_IBAN, BigDecimal.valueOf(200L))));
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
                 .accountIban(ACCOUNT_IBAN)
@@ -90,12 +90,16 @@ class TransactionServiceTest {
                 .fee(FEE)
                 .description("Restaurant payment")
                 .build();
+        when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.empty());
+        when(accountRepository.findById(ACCOUNT_IBAN))
+                .thenReturn(Optional.of(new Account(ACCOUNT_IBAN, BigDecimal.valueOf(200L))));
 
         // WHEN
         // THEN
         assertThatThrownBy(() -> transactionService.createTransaction(transaction))
                 .isInstanceOf(InvalidTransactionException.class);
-        verifyNoInteractions(transactionRepository);
+        verify(transactionRepository).findById(TRANSACTION_REFERENCE);
+        verifyNoMoreInteractions(transactionRepository);
     }
 
     @Test
