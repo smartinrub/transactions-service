@@ -45,15 +45,17 @@ An account with iban number `ES9820385778983000760236` is already loaded.
 
 - Request:
 ```
-curl -X POST -H "Content-Type: application/json" http://localhost:8080/transactions -d 
-'{
-  "reference": "12345A",
+POST http://localhost:8080/transactions
+Content-Type: application/json
+
+{
+  "reference": "f8145c28-4730-4afc-8cf5-11934d94b06f",
   "accountIban": "ES9820385778983000760236",
   "date": "2019-07-16T16:55:42.000Z",
   "amount": 193.38,
   "fee": 3.18,
   "description": "Restaurant payment"
-}'
+}
 ```
 
 - Response
@@ -77,7 +79,8 @@ HTTP/1.1 422
 - Request
 
 ```
-curl -X GET http://localhost:8080/transactions/ibans/ES9820385778983000760236
+GET http://localhost:8080/transactions/ibans/ES9820385778983000760236
+Accept: application/json
 ```
 
 - Response
@@ -99,7 +102,8 @@ HTTP/1.1 200
 - Request
 
 ```
-curl -X GET http://localhost:8080/transactions/12345A/status?channel=CLIENT
+GET http://localhost:8080/transactions/f8145c28-4730-4afc-8cf5-11934d94b06f/status?channel=CLIENT
+Accept: application/json
 ```
 
 - Response
