@@ -1,6 +1,5 @@
 package com.sergiomartinrubio.transactionsservice.service;
 
-import com.sergiomartinrubio.transactionsservice.exception.TransactionNotFoundException;
 import com.sergiomartinrubio.transactionsservice.model.Channel;
 import com.sergiomartinrubio.transactionsservice.model.Status;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
@@ -15,11 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,24 +60,13 @@ class TransactionServiceTest {
     @Test
     void givenAccountIbanWhenSearchTransactionThenReturnTransaction() {
         // GIVEN
-        when(transactionRepository.searchTransaction(ACCOUNT_IBAN)).thenReturn(Optional.of(TRANSACTION));
+        when(transactionRepository.searchTransaction(ACCOUNT_IBAN)).thenReturn(List.of(TRANSACTION));
 
         // WHEN
-        Transaction result = transactionService.searchTransaction(ACCOUNT_IBAN);
+        List<Transaction> result = transactionService.searchTransaction(ACCOUNT_IBAN);
 
         // THEN
-        assertThat(result).isEqualTo(TRANSACTION);
-    }
-
-    @Test
-    void givenInvalidAccountIbanWhenSearchTransactionThenThrowTransactionNotFoundException() {
-        // GIVEN
-        when(transactionRepository.searchTransaction(ACCOUNT_IBAN)).thenReturn(Optional.empty());
-
-        // WHEN
-        // THEN
-        assertThatThrownBy(() -> transactionService.searchTransaction(ACCOUNT_IBAN))
-                .isInstanceOf(TransactionNotFoundException.class);
+        assertThat(result).containsExactly(TRANSACTION);
     }
 
     @Test

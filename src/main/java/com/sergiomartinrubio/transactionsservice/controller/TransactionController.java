@@ -1,16 +1,15 @@
 package com.sergiomartinrubio.transactionsservice.controller;
 
-import com.sergiomartinrubio.transactionsservice.exception.TransactionNotFoundException;
 import com.sergiomartinrubio.transactionsservice.model.Channel;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -26,7 +25,7 @@ public class TransactionController {
     }
 
     @GetMapping("/transactions/ibans/{accountIban}")
-    public Transaction searchTransaction(@PathVariable("accountIban") String accountIban) {
+    public List<Transaction> searchTransaction(@PathVariable("accountIban") String accountIban) {
         return transactionService.searchTransaction(accountIban);
     }
 

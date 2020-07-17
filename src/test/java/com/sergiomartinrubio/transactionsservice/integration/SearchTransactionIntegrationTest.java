@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,12 +45,17 @@ class SearchTransactionIntegrationTest {
         restTemplate.exchange("/transactions", HttpMethod.POST, request, String.class);
 
         // WHEN
-        ResponseEntity<Transaction> response = restTemplate
-                .getForEntity("/transactions/ibans/{iban}", Transaction.class, ACCOUNT_IBAN);
+        ResponseEntity<String> response = restTemplate
+                .getForEntity("/transactions/ibans/{iban}", String.class, ACCOUNT_IBAN);
 
         // THEN
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(transaction);
+        assertThat(response.getBody()).isEqualTo("[{\"reference\":\"f8145c28-4730-4afc-8cf5-11934d94b06f\"," +
+                "\"accountIban\":\"ES9820385778983000760236\"," +
+                "\"date\":\"2019-07-16T17:55:42+01:00\"," +
+                "\"amount\":193.38," +
+                "\"fee\":3.18," +
+                "\"description\":\"Restaurant payment\"}]");
     }
 
 }

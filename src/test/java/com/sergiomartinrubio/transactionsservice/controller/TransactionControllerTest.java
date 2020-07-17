@@ -1,6 +1,5 @@
 package com.sergiomartinrubio.transactionsservice.controller;
 
-import com.sergiomartinrubio.transactionsservice.exception.TransactionNotFoundException;
 import com.sergiomartinrubio.transactionsservice.model.Channel;
 import com.sergiomartinrubio.transactionsservice.model.Status;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
@@ -16,6 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,13 +76,13 @@ class TransactionControllerTest {
     @Test
     public void givenAccountIbanWhenGetRequestToTransactionsThenReturnTransaction() throws Exception {
         // GIVEN
-        String responseBody = "{\"reference\":\"f8145c28-4730-4afc-8cf5-11934d94b06f\"," +
+        String responseBody = "[{\"reference\":\"f8145c28-4730-4afc-8cf5-11934d94b06f\"," +
                 "\"accountIban\":\"ES9820385778983000760236\"," +
                 "\"date\":\"2019-07-16T16:55:42Z\"," +
                 "\"amount\":193.38," +
                 "\"fee\":3.18," +
-                "\"description\":\"Restaurant payment\"}";
-        when(transactionService.searchTransaction(ACCOUNT_IBAN)).thenReturn(TRANSACTION);
+                "\"description\":\"Restaurant payment\"}]";
+        when(transactionService.searchTransaction(ACCOUNT_IBAN)).thenReturn(List.of(TRANSACTION));
 
         // WHEN
         MvcResult result = mockMvc.perform(get("/transactions/ibans/" + ACCOUNT_IBAN))
@@ -92,17 +92,6 @@ class TransactionControllerTest {
 
         // THEN
         assertThat(result.getResponse().getContentAsString()).isEqualTo(responseBody);
-    }
-
-    @Test
-    public void givenTransactionNotFoundWhenGetRequestToTransactionsThenReturnNotFound() throws Exception {
-        // GIVEN
-        when(transactionService.searchTransaction(ACCOUNT_IBAN)).thenThrow(TransactionNotFoundException.class);
-
-        // WHEN
-        mockMvc.perform(get("/transactions/ibans/" + ACCOUNT_IBAN))
-                .andDo(print())
-                .andExpect(status().isNotFound());
     }
 
     @Test

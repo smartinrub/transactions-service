@@ -1,6 +1,5 @@
 package com.sergiomartinrubio.transactionsservice.service;
 
-import com.sergiomartinrubio.transactionsservice.exception.TransactionNotFoundException;
 import com.sergiomartinrubio.transactionsservice.model.Channel;
 import com.sergiomartinrubio.transactionsservice.model.Status;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
@@ -10,6 +9,8 @@ import com.sergiomartinrubio.transactionsservice.util.TransactionStatusHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,12 +22,17 @@ public class TransactionService {
     private final TransactionStatusHelper transactionStatusHelper;
 
     public void createTransaction(Transaction transaction) {
+        if (transaction.getReference() == null) {
+            transaction.setReference(UUID.randomUUID());
+        }
+        if (transaction.getDate() == null) {
+            transaction.setDate(ZonedDateTime.now());
+        }
         transactionRepository.save(transaction);
     }
 
-    public Transaction searchTransaction(String accountIban) {
-        return transactionRepository.searchTransaction(accountIban)
-                .orElseThrow(() -> new TransactionNotFoundException(accountIban));
+    public List<Transaction> searchTransaction(String accountIban) {
+        return transactionRepository.searchTransaction(accountIban);
     }
 
     public TransactionStatus getTransactionStatus(UUID reference, Channel channel) {
