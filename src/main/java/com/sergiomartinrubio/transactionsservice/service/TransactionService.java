@@ -10,6 +10,7 @@ import com.sergiomartinrubio.transactionsservice.util.TransactionStatusHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,9 +30,13 @@ public class TransactionService {
     }
 
     public TransactionStatus getTransactionStatus(UUID reference, Channel channel) {
-        Transaction transaction = transactionRepository.findById(reference)
-                .orElseThrow(() -> new TransactionNotFoundException(reference));
+        Optional<Transaction> transaction = transactionRepository.findById(reference);
+        if (transaction.isEmpty()) {
+            return TransactionStatus.builder()
+                    .reference(reference)
+                    .status(Status.INVALID).build();
+        }
 
-        return transactionStatusHelper.buildTransactionStatus(transaction, channel);
+        return transactionStatusHelper.buildTransactionStatus(transaction.get(), channel);
     }
 }

@@ -101,14 +101,15 @@ class TransactionServiceTest {
     }
 
     @Test
-    void givenInvalidReferenceWhenGetTransactionStatusThenThrowTransactionNotFoundException() {
+    void givenInvalidReferenceWhenGetTransactionStatusThenStatusIsInvalid() {
         // GIVEN
         when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.empty());
 
         // WHEN
+        TransactionStatus result = transactionService.getTransactionStatus(TRANSACTION_REFERENCE, Channel.CLIENT);
+
         // THEN
-        assertThatThrownBy(() -> transactionService.getTransactionStatus(TRANSACTION_REFERENCE, Channel.CLIENT))
-                .isInstanceOf(TransactionNotFoundException.class);
+        assertThat(result.getStatus()).isEqualTo(Status.INVALID);
     }
 
 }
