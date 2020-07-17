@@ -4,6 +4,8 @@
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Setup](#setup)
+* [Run Tests](#run-tests)
+* [API Usage](#api-usage)
 
 ## General info
 This project is simple Lorem ipsum dolor generator.
