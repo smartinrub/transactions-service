@@ -67,7 +67,7 @@ databaseChangeLog:
                   value: ES9820385778983000760236
               - column:
                   name: balance
-                  value: 0
+                  value: 200
   - changeSet:
       id: 4
       author: Sergio Martin Rubio

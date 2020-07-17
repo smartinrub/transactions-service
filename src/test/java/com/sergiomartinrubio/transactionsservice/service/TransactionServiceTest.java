@@ -1,9 +1,9 @@
 package com.sergiomartinrubio.transactionsservice.service;
 
-import com.sergiomartinrubio.transactionsservice.model.Channel;
-import com.sergiomartinrubio.transactionsservice.model.Status;
-import com.sergiomartinrubio.transactionsservice.model.Transaction;
-import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
+import com.sergiomartinrubio.transactionsservice.exception.AccountNotFoundException;
+import com.sergiomartinrubio.transactionsservice.exception.InvalidTransactionException;
+import com.sergiomartinrubio.transactionsservice.model.*;
+import com.sergiomartinrubio.transactionsservice.repository.AccountRepository;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
 import com.sergiomartinrubio.transactionsservice.util.TransactionStatusHelper;
 import org.junit.jupiter.api.Test;
@@ -19,8 +19,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceTest {
@@ -40,6 +40,9 @@ class TransactionServiceTest {
             .build();
 
     @Mock
+    private AccountRepository accountRepository;
+
+    @Mock
     private TransactionRepository transactionRepository;
 
     @Mock
@@ -50,11 +53,49 @@ class TransactionServiceTest {
 
     @Test
     void givenTransactionWhenCreateTransactionThenCallRepositoryToSaveTransaction() {
+        // GIVEN
+        when(accountRepository.findById(ACCOUNT_IBAN))
+                .thenReturn(Optional.of(new Account(ACCOUNT_IBAN, BigDecimal.valueOf(100L))));
+
         // WHEN
         transactionService.createTransaction(TRANSACTION);
 
         // THEN
         verify(transactionRepository).save(TRANSACTION);
+    }
+
+    @Test
+    void givenAccountNotFoundWhenCreateTransactionThenThrowAccountNotFoundException() {
+        // GIVEN
+        when(accountRepository.findById(ACCOUNT_IBAN))
+                .thenReturn(Optional.empty());
+
+        // WHEN
+        // THEN
+        assertThatThrownBy(() -> transactionService.createTransaction(TRANSACTION))
+                .isInstanceOf(AccountNotFoundException.class);
+        verifyNoInteractions(transactionRepository);
+    }
+
+    @Test
+    void givenFinalBalanceBelowZeroWhenCreateTransactionThenThrowInvalidTransactionException() {
+        // GIVEN
+        when(accountRepository.findById(ACCOUNT_IBAN))
+                .thenReturn(Optional.of(new Account(ACCOUNT_IBAN, BigDecimal.valueOf(200L))));
+        Transaction transaction = Transaction.builder()
+                .reference(TRANSACTION_REFERENCE)
+                .accountIban(ACCOUNT_IBAN)
+                .date(DATE)
+                .amount(BigDecimal.valueOf(-250))
+                .fee(FEE)
+                .description("Restaurant payment")
+                .build();
+
+        // WHEN
+        // THEN
+        assertThatThrownBy(() -> transactionService.createTransaction(transaction))
+                .isInstanceOf(InvalidTransactionException.class);
+        verifyNoInteractions(transactionRepository);
     }
 
     @Test

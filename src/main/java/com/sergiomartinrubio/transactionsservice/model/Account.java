@@ -1,19 +1,21 @@
 package com.sergiomartinrubio.transactionsservice.model;
 
-import lombok.Value;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 
-@Value
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Account {
 
     @Id
     @Column(name = "account_iban")
-    private final String accountIban;
+    private String accountIban;
 
-    private final BigDecimal balance;
+    private BigDecimal balance;
 }
