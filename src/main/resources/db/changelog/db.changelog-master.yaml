@@ -4,6 +4,24 @@ databaseChangeLog:
       author: Sergio Martin Rubio
       changes:
         - createTable:
+            tableName: account
+            columns:
+              - column:
+                  name: account_iban
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: balance
+                  type: decimal
+                  constraints:
+                    nullable: true
+  - changeSet:
+      id: 2
+      author: Sergio Martin Rubio
+      changes:
+        - createTable:
             tableName: transaction
             columns:
               - column:
