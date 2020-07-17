@@ -25,7 +25,13 @@ To run this project use Maven:
 
 Once it's built the service can be also ran like this:
 
+```
 java -jar target/transactions-service-1.0.0.jar
+```
+
+The application is available at `localhost:8080`
+
+An account with iban number `ES9820385778983000760236` is already loaded.
 
 ## Run Tests
 
