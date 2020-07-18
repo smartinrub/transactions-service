@@ -5,7 +5,7 @@ import com.sergiomartinrubio.transactionsservice.exception.InvalidTransactionExc
 import com.sergiomartinrubio.transactionsservice.model.*;
 import com.sergiomartinrubio.transactionsservice.repository.AccountRepository;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
-import com.sergiomartinrubio.transactionsservice.util.TransactionStatusHelper;
+import com.sergiomartinrubio.transactionsservice.util.TransactionStatusTransformer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -47,7 +47,7 @@ class TransactionServiceTest {
     private TransactionRepository transactionRepository;
 
     @Mock
-    private TransactionStatusHelper transactionStatusHelper;
+    private TransactionStatusTransformer transactionStatusTransformer;
 
     @InjectMocks
     private TransactionService transactionService;
@@ -127,7 +127,7 @@ class TransactionServiceTest {
                 .fee(FEE)
                 .build();
         when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.of(TRANSACTION));
-        when(transactionStatusHelper.buildTransactionStatus(TRANSACTION, Channel.CLIENT)).thenReturn(transactionStatus);
+        when(transactionStatusTransformer.transform(TRANSACTION, Channel.CLIENT)).thenReturn(transactionStatus);
 
         // WHEN
         TransactionStatus result = transactionService.getTransactionStatus(TRANSACTION_REFERENCE, Channel.CLIENT);

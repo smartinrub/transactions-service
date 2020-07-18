@@ -12,14 +12,19 @@ import java.time.ZonedDateTime;
 import static com.sergiomartinrubio.transactionsservice.model.Status.*;
 
 @Component
-public class TransactionStatusHelper {
+public class TransactionStatusTransformer {
 
-    public TransactionStatus buildTransactionStatus(Transaction transaction, Channel channel) {
+    public TransactionStatus transform(Transaction transaction, Channel channel) {
         ZonedDateTime transactionDate = transaction.getDate();
         TransactionStatus.TransactionStatusBuilder transactionStatusBuilder = TransactionStatus.builder()
                 .reference(transaction.getReference());
+        // Assuming when channel is not provided we default to CLIENT
+        if (channel == null) {
+            channel = Channel.CLIENT;
+        }
         switch (channel) {
             case CLIENT:
+            default:
                 transactionStatusBuilder.amount(getAmount(transaction));
                 if (isTransactionBeforeToday(transactionDate)) {
                     transactionStatusBuilder.status(SETTLED);
@@ -50,9 +55,6 @@ public class TransactionStatusHelper {
                 }
                 return transactionStatusBuilder.build();
         }
-
-        return TransactionStatus.builder()
-                .build();
     }
 
     private boolean isTransactionBeforeToday(ZonedDateTime date) {

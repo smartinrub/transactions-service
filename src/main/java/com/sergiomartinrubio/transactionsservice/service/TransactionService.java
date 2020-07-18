@@ -5,7 +5,7 @@ import com.sergiomartinrubio.transactionsservice.exception.InvalidTransactionExc
 import com.sergiomartinrubio.transactionsservice.model.*;
 import com.sergiomartinrubio.transactionsservice.repository.AccountRepository;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
-import com.sergiomartinrubio.transactionsservice.util.TransactionStatusHelper;
+import com.sergiomartinrubio.transactionsservice.util.TransactionStatusTransformer;
 import com.sergiomartinrubio.transactionsservice.util.TransactionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ import java.util.UUID;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final TransactionStatusHelper transactionStatusHelper;
+    private final TransactionStatusTransformer transactionStatusTransformer;
     private final AccountRepository accountRepository;
 
     @Transactional
@@ -66,7 +66,7 @@ public class TransactionService {
                     .status(Status.INVALID).build();
         }
 
-        return transactionStatusHelper.buildTransactionStatus(transaction.get(), channel);
+        return transactionStatusTransformer.transform(transaction.get(), channel);
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.UUID;
 import static com.sergiomartinrubio.transactionsservice.model.Channel.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TransactionStatusHelperTest {
+class TransactionStatusTransformerTest {
 
     private static final UUID TRANSACTION_REFERENCE = UUID.randomUUID();
     private static final String ACCOUNT_IBAN = "ES9820385778983000760236";
@@ -21,7 +21,7 @@ class TransactionStatusHelperTest {
     private static final BigDecimal FEE = new BigDecimal("3.18");
 
     @Test
-    public void givenClientOrAtmChannelAndTransactionBeforeTodayWhenBuildTransactionStatusThenReturnSettledAndAmountSubstractingFee() {
+    public void givenClientOrAtmChannelAndTransactionBeforeTodayWhenTransformThenReturnSettledAndAmountSubstractingFee() {
         // GIVEN
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
@@ -31,10 +31,10 @@ class TransactionStatusHelperTest {
                 .fee(FEE)
                 .description("Restaurant payment")
                 .build();
-        TransactionStatusHelper transactionStatusHelper = new TransactionStatusHelper();
+        TransactionStatusTransformer transactionStatusTransformer = new TransactionStatusTransformer();
 
         // WHEN
-        TransactionStatus transactionStatus = transactionStatusHelper.buildTransactionStatus(transaction, CLIENT);
+        TransactionStatus transactionStatus = transactionStatusTransformer.transform(transaction, CLIENT);
 
         // THEN
         TransactionStatus expected = TransactionStatus.builder()
@@ -46,7 +46,7 @@ class TransactionStatusHelperTest {
     }
 
     @Test
-    public void givenInternalChannelAndTransactionBeforeTodayWhenBuildTransactionStatusThenReturnSettledAndAmountAndFee() {
+    public void givenInternalChannelAndTransactionBeforeTodayWhenTransformThenReturnSettledAndAmountAndFee() {
         // GIVEN
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
@@ -56,10 +56,10 @@ class TransactionStatusHelperTest {
                 .fee(FEE)
                 .description("Restaurant payment")
                 .build();
-        TransactionStatusHelper transactionStatusHelper = new TransactionStatusHelper();
+        TransactionStatusTransformer transactionStatusTransformer = new TransactionStatusTransformer();
 
         // WHEN
-        TransactionStatus transactionStatus = transactionStatusHelper.buildTransactionStatus(transaction, INTERNAL);
+        TransactionStatus transactionStatus = transactionStatusTransformer.transform(transaction, INTERNAL);
 
         // THEN
         TransactionStatus expected = TransactionStatus.builder()
@@ -72,7 +72,7 @@ class TransactionStatusHelperTest {
     }
 
     @Test
-    public void givenClientOrAtmChannelAndTransactionTodayWhenBuildTransactionStatusThenReturnPendingAndAmountSubstractingFee() {
+    public void givenClientOrAtmChannelAndTransactionTodayWhenTransformThenReturnPendingAndAmountSubstractingFee() {
         // GIVEN
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
@@ -82,10 +82,10 @@ class TransactionStatusHelperTest {
                 .fee(FEE)
                 .description("Restaurant payment")
                 .build();
-        TransactionStatusHelper transactionStatusHelper = new TransactionStatusHelper();
+        TransactionStatusTransformer transactionStatusTransformer = new TransactionStatusTransformer();
 
         // WHEN
-        TransactionStatus transactionStatus = transactionStatusHelper.buildTransactionStatus(transaction, CLIENT);
+        TransactionStatus transactionStatus = transactionStatusTransformer.transform(transaction, CLIENT);
 
         // THEN
         TransactionStatus expected = TransactionStatus.builder()
@@ -97,7 +97,7 @@ class TransactionStatusHelperTest {
     }
 
     @Test
-    public void givenInternalChannelAndTransactionTodayWhenBuildTransactionStatusThenReturnPendingAndAmountAndFee() {
+    public void givenInternalChannelAndTransactionTodayWhenTransformThenReturnPendingAndAmountAndFee() {
         // GIVEN
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
@@ -107,10 +107,10 @@ class TransactionStatusHelperTest {
                 .fee(FEE)
                 .description("Restaurant payment")
                 .build();
-        TransactionStatusHelper transactionStatusHelper = new TransactionStatusHelper();
+        TransactionStatusTransformer transactionStatusTransformer = new TransactionStatusTransformer();
 
         // WHEN
-        TransactionStatus transactionStatus = transactionStatusHelper.buildTransactionStatus(transaction, INTERNAL);
+        TransactionStatus transactionStatus = transactionStatusTransformer.transform(transaction, INTERNAL);
 
         // THEN
         TransactionStatus expected = TransactionStatus.builder()
@@ -123,7 +123,7 @@ class TransactionStatusHelperTest {
     }
 
     @Test
-    public void givenClientChannelAndTransactionGreaterThanTodayWhenBuildTransactionStatusThenReturnFutureAndAmountSubstractingFee() {
+    public void givenClientChannelAndTransactionGreaterThanTodayWhenTransformThenReturnFutureAndAmountSubstractingFee() {
         // GIVEN
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
@@ -133,10 +133,10 @@ class TransactionStatusHelperTest {
                 .fee(FEE)
                 .description("Restaurant payment")
                 .build();
-        TransactionStatusHelper transactionStatusHelper = new TransactionStatusHelper();
+        TransactionStatusTransformer transactionStatusTransformer = new TransactionStatusTransformer();
 
         // WHEN
-        TransactionStatus transactionStatus = transactionStatusHelper.buildTransactionStatus(transaction, CLIENT);
+        TransactionStatus transactionStatus = transactionStatusTransformer.transform(transaction, CLIENT);
 
         // THEN
         TransactionStatus expected = TransactionStatus.builder()
@@ -148,7 +148,7 @@ class TransactionStatusHelperTest {
     }
 
     @Test
-    public void givenAtmChannelAndTransactionGreaterThanTodayWhenBuildTransactionStatusThenReturnPendingAndAmountSubstractingFee() {
+    public void givenAtmChannelAndTransactionGreaterThanTodayWhenTransformThenReturnPendingAndAmountSubstractingFee() {
         // GIVEN
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
@@ -158,10 +158,10 @@ class TransactionStatusHelperTest {
                 .fee(FEE)
                 .description("Restaurant payment")
                 .build();
-        TransactionStatusHelper transactionStatusHelper = new TransactionStatusHelper();
+        TransactionStatusTransformer transactionStatusTransformer = new TransactionStatusTransformer();
 
         // WHEN
-        TransactionStatus transactionStatus = transactionStatusHelper.buildTransactionStatus(transaction, ATM);
+        TransactionStatus transactionStatus = transactionStatusTransformer.transform(transaction, ATM);
 
         // THEN
         TransactionStatus expected = TransactionStatus.builder()
@@ -173,7 +173,7 @@ class TransactionStatusHelperTest {
     }
 
     @Test
-    public void givenInternalChannelAndTransactionGreaterThanTodayWhenBuildTransactionStatusThenReturnFutureAndAmountAndFee() {
+    public void givenInternalChannelAndTransactionGreaterThanTodayWhenTransformThenReturnFutureAndAmountAndFee() {
         // GIVEN
         Transaction transaction = Transaction.builder()
                 .reference(TRANSACTION_REFERENCE)
@@ -183,10 +183,10 @@ class TransactionStatusHelperTest {
                 .fee(FEE)
                 .description("Restaurant payment")
                 .build();
-        TransactionStatusHelper transactionStatusHelper = new TransactionStatusHelper();
+        TransactionStatusTransformer transactionStatusTransformer = new TransactionStatusTransformer();
 
         // WHEN
-        TransactionStatus transactionStatus = transactionStatusHelper.buildTransactionStatus(transaction, INTERNAL);
+        TransactionStatus transactionStatus = transactionStatusTransformer.transform(transaction, INTERNAL);
 
         // THEN
         TransactionStatus expected = TransactionStatus.builder()
@@ -194,6 +194,31 @@ class TransactionStatusHelperTest {
                 .status(Status.FUTURE)
                 .amount(AMOUNT)
                 .fee(FEE)
+                .build();
+        assertThat(transactionStatus).isEqualTo(expected);
+    }
+
+    @Test
+    public void givenNullChannelAndTransactionGreaterThanTodayWhenTransformThenDefaultToClient() {
+        // GIVEN
+        Transaction transaction = Transaction.builder()
+                .reference(TRANSACTION_REFERENCE)
+                .accountIban(ACCOUNT_IBAN)
+                .date(ZonedDateTime.now().minus(1, ChronoUnit.DAYS))
+                .amount(AMOUNT)
+                .fee(FEE)
+                .description("Restaurant payment")
+                .build();
+        TransactionStatusTransformer transactionStatusTransformer = new TransactionStatusTransformer();
+
+        // WHEN
+        TransactionStatus transactionStatus = transactionStatusTransformer.transform(transaction, null);
+
+        // THEN
+        TransactionStatus expected = TransactionStatus.builder()
+                .reference(TRANSACTION_REFERENCE)
+                .status(Status.SETTLED)
+                .amount(AMOUNT.subtract(FEE))
                 .build();
         assertThat(transactionStatus).isEqualTo(expected);
     }
