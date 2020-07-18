@@ -1,14 +1,14 @@
 package com.sergiomartinrubio.transactionsservice.integration;
 
+import com.sergiomartinrubio.transactionsservice.model.Channel;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
+import com.sergiomartinrubio.transactionsservice.model.TransactionStatusParams;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -44,8 +44,12 @@ class GetTransactionStatusIntegrationTest {
         restTemplate.postForEntity("/transactions", request, String.class);
 
         // WHEN
+        TransactionStatusParams params = new TransactionStatusParams(TRANSACTION_REFERENCE, Channel.CLIENT);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
         ResponseEntity<TransactionStatus> response = restTemplate
-                .getForEntity("/transactions/f8145c28-4730-4afc-8cf5-11934d94b06f/status?channel=CLIENT", TransactionStatus.class);
+                .exchange("/transactions/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
 
         // THEN
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

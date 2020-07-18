@@ -1,6 +1,9 @@
 package com.sergiomartinrubio.transactionsservice.controller;
 
-import com.sergiomartinrubio.transactionsservice.model.*;
+import com.sergiomartinrubio.transactionsservice.model.Channel;
+import com.sergiomartinrubio.transactionsservice.model.Status;
+import com.sergiomartinrubio.transactionsservice.model.Transaction;
+import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.service.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +103,8 @@ class TransactionControllerTest {
                 "\"amount\":193.38," +
                 "\"fee\":3.18" +
                 "}";
+        String requestBody = "{\"reference\":\"f8145c28-4730-4afc-8cf5-11934d94b06f\"," +
+                "\"channel\":\"CLIENT\"}";
         TransactionStatus transactionStatus = TransactionStatus.builder()
                 .reference(TRANSACTION_REFERENCE)
                 .status(Status.PENDING)
@@ -110,7 +115,9 @@ class TransactionControllerTest {
 
         // WHEN
         MvcResult result = mockMvc
-                .perform(get("/transactions/" + TRANSACTION_REFERENCE + "/status?channel=" + Channel.CLIENT))
+                .perform(post("/transactions/status")
+                        .contentType(APPLICATION_JSON)
+                        .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
