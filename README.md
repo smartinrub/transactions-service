@@ -104,8 +104,13 @@ HTTP/1.1 200
 - Request
 
 ```
-GET http://localhost:8080/transactions/f8145c28-4730-4afc-8cf5-11934d94b06f/status?channel=CLIENT
-Accept: application/json
+POST http://localhost:8080/transactions/status
+Content-Type: application/json
+
+{
+  "reference": "f8145c28-4730-4afc-8cf5-11934d94b06f",
+  "channel": "CLIENT"
+}
 ```
 
 - Response
