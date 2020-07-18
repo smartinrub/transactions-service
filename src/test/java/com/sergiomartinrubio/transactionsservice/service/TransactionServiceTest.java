@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -105,10 +106,12 @@ class TransactionServiceTest {
     @Test
     void givenAccountIbanWhenSearchTransactionThenReturnTransaction() {
         // GIVEN
-        when(transactionRepository.searchTransaction(ACCOUNT_IBAN)).thenReturn(List.of(TRANSACTION));
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.add(TRANSACTION);
+        when(transactionRepository.searchTransaction(ACCOUNT_IBAN)).thenReturn(transactions);
 
         // WHEN
-        List<Transaction> result = transactionService.searchTransaction(ACCOUNT_IBAN);
+        List<Transaction> result = transactionService.searchTransaction(ACCOUNT_IBAN, OrderType.ASC);
 
         // THEN
         assertThat(result).containsExactly(TRANSACTION);

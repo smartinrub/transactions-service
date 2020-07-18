@@ -1,6 +1,7 @@
 package com.sergiomartinrubio.transactionsservice.controller;
 
 import com.sergiomartinrubio.transactionsservice.model.Channel;
+import com.sergiomartinrubio.transactionsservice.model.OrderType;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.service.TransactionService;
@@ -25,8 +26,9 @@ public class TransactionController {
     }
 
     @GetMapping("/transactions/ibans/{accountIban}")
-    public List<Transaction> searchTransaction(@PathVariable("accountIban") String accountIban) {
-        return transactionService.searchTransaction(accountIban);
+    public List<Transaction> searchTransaction(@PathVariable("accountIban") String accountIban,
+                                               @RequestParam(value = "orderType", required = false) OrderType orderType) {
+        return transactionService.searchTransaction(accountIban, orderType);
     }
 
     // We shouldn't use a request body for GET operations

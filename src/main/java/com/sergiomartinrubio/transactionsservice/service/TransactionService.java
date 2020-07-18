@@ -53,8 +53,9 @@ public class TransactionService {
         accountRepository.updateBalance(finalBalance, transaction.getAccountIban());
     }
 
-    public List<Transaction> searchTransaction(String accountIban) {
-        return transactionRepository.searchTransaction(accountIban);
+    public List<Transaction> searchTransaction(String accountIban, OrderType orderType) {
+        List<Transaction> transactions = transactionRepository.searchTransaction(accountIban);
+        return TransactionUtils.sortTransactionsByAmount(orderType, transactions);
     }
 
     public TransactionStatus getTransactionStatus(UUID reference, Channel channel) {
