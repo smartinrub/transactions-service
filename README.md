@@ -76,7 +76,7 @@ if invalid transaction:
 HTTP/1.1 422
 ```
 
-### Search Transaction
+### Search Transactions
 
 - Request
 
@@ -90,12 +90,20 @@ Accept: application/json
 ```
 HTTP/1.1 200
 [{
-  "reference": "12345A",
+  "reference": "f8145c28-4730-4afc-8cf5-11934d94b06f",
   "accountIban": "ES9820385778983000760236",
   "date": "2019-07-16T16:55:42.000Z",
   "amount": 193.38,
   "fee": 3.18,
   "description": "Restaurant payment"
+},
+{
+  "reference": "5531f334-70f7-4275-9f19-d5130af816bf",
+  "accountIban": "ES9820385778983000760236",
+  "date": "2020-07-16T16:55:42.000Z",
+  "amount": -50.38,
+  "fee": 3.18,
+  "description": "Groceries"
 }]
 ```
 
