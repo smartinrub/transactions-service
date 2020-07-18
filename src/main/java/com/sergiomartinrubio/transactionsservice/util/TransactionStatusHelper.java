@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import static com.sergiomartinrubio.transactionsservice.model.Status.*;
@@ -68,11 +67,6 @@ public class TransactionStatusHelper {
         int month = date.getMonthValue();
         int day = date.getDayOfMonth();
         return LocalDate.of(year, month, day).isEqual(LocalDate.now());
-    }
-
-    private boolean isTransactionGreaterThanToday(ZonedDateTime date) {
-        ZonedDateTime today = LocalDate.now().atStartOfDay(ZoneId.systemDefault());
-        return date.isAfter(today);
     }
 
     private BigDecimal getAmount(Transaction transaction) {
