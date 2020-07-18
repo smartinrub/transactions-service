@@ -25,9 +25,9 @@ public class TransactionController {
         transactionService.createTransaction(transaction);
     }
 
-    @GetMapping("/transactions/ibans/{accountIban}")
-    public List<Transaction> searchTransaction(@PathVariable("accountIban") String accountIban,
-                                               @RequestParam(value = "orderType", required = false) OrderType orderType) {
+    @GetMapping("/transactions/{accountIban}")
+    public List<Transaction> searchTransactions(@PathVariable("accountIban") String accountIban,
+                                                @RequestParam(value = "orderType", required = false) OrderType orderType) {
         return transactionService.searchTransaction(accountIban, orderType);
     }
 

@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +45,7 @@ class SearchTransactionIntegrationTest {
 
         // WHEN
         ResponseEntity<String> response = restTemplate
-                .getForEntity("/transactions/ibans/{iban}", String.class, ACCOUNT_IBAN);
+                .getForEntity("/transactions/{iban}", String.class, ACCOUNT_IBAN);
 
         // THEN
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

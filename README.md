@@ -81,7 +81,7 @@ HTTP/1.1 422
 - Request
 
 ```
-GET http://localhost:8080/transactions/ibans/ES9820385778983000760236
+GET http://localhost:8080/transactions/ES9820385778983000760236
 Accept: application/json
 ```
 
