@@ -1,14 +1,10 @@
 package com.sergiomartinrubio.transactionsservice.service;
 
-import com.sergiomartinrubio.transactionsservice.exception.AccountNotFoundException;
-import com.sergiomartinrubio.transactionsservice.exception.InvalidTransactionException;
-import com.sergiomartinrubio.transactionsservice.model.Account;
 import com.sergiomartinrubio.transactionsservice.model.OrderType;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
-import com.sergiomartinrubio.transactionsservice.repository.AccountRepository;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
 import com.sergiomartinrubio.transactionsservice.service.impl.TransactionServiceImpl;
-import com.sergiomartinrubio.transactionsservice.util.TransactionHelper;
+import com.sergiomartinrubio.transactionsservice.util.TransactionSorter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +19,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,10 +39,7 @@ class TransactionServiceTest {
             .build();
 
     @Mock
-    private AccountRepository accountRepository;
-
-    @Mock
-    private TransactionHelper transactionHelper;
+    private TransactionSorter transactionSorter;
 
     @Mock
     private TransactionRepository transactionRepository;
@@ -56,59 +48,26 @@ class TransactionServiceTest {
     private TransactionServiceImpl transactionService;
 
     @Test
-    void givenTransactionWhenCreateTransactionThenCallRepositoryToSaveTransaction() {
+    void givenTransactionReferenceWhenFindByIdThenReturnTransaction() {
         // GIVEN
-        Account account = new Account(ACCOUNT_IBAN, BigDecimal.valueOf(100L));
-        when(accountRepository.findById(ACCOUNT_IBAN))
-                .thenReturn(Optional.of(account));
-        when(transactionHelper.getFinalBalance(TRANSACTION, account)).thenReturn(new BigDecimal("293.38"));
+        when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.of(TRANSACTION));
 
         // WHEN
-        transactionService.createTransaction(TRANSACTION);
+        Transaction transaction = transactionService.findById(TRANSACTION_REFERENCE).orElseThrow();
+
+        // THEN
+        assertThat(transaction).isEqualTo(TRANSACTION);
+    }
+
+    @Test
+    void givenTransactionWhenSaveThenCallSave() {
+        // WHEN
+        transactionService.save(TRANSACTION);
 
         // THEN
         verify(transactionRepository).save(TRANSACTION);
     }
 
-    @Test
-    void givenAccountNotFoundWhenCreateTransactionThenThrowAccountNotFoundException() {
-        // GIVEN
-        when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.empty());
-        when(accountRepository.findById(ACCOUNT_IBAN))
-                .thenReturn(Optional.empty());
-
-        // WHEN
-        // THEN
-        assertThatThrownBy(() -> transactionService.createTransaction(TRANSACTION))
-                .isInstanceOf(AccountNotFoundException.class);
-        verify(transactionRepository).findById(TRANSACTION_REFERENCE);
-        verifyNoMoreInteractions(transactionRepository);
-    }
-
-    @Test
-    void givenFinalBalanceBelowZeroWhenCreateTransactionThenThrowInvalidTransactionException() {
-        // GIVEN
-        Transaction transaction = Transaction.builder()
-                .reference(TRANSACTION_REFERENCE)
-                .accountIban(ACCOUNT_IBAN)
-                .date(DATE)
-                .amount(BigDecimal.valueOf(-250))
-                .fee(FEE)
-                .description("Restaurant payment")
-                .build();
-        Account account = new Account(ACCOUNT_IBAN, BigDecimal.valueOf(200L));
-        when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.empty());
-        when(accountRepository.findById(ACCOUNT_IBAN))
-                .thenReturn(Optional.of(account));
-        when(transactionHelper.getFinalBalance(transaction, account)).thenReturn(new BigDecimal(-50));
-
-        // WHEN
-        // THEN
-        assertThatThrownBy(() -> transactionService.createTransaction(transaction))
-                .isInstanceOf(InvalidTransactionException.class);
-        verify(transactionRepository).findById(TRANSACTION_REFERENCE);
-        verifyNoMoreInteractions(transactionRepository);
-    }
 
     @Test
     void givenAccountIbanWhenSearchTransactionThenReturnTransaction() {
@@ -116,10 +75,10 @@ class TransactionServiceTest {
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(TRANSACTION);
         when(transactionRepository.searchTransaction(ACCOUNT_IBAN)).thenReturn(transactions);
-        when(transactionHelper.sortTransactionsByAmount(any(OrderType.class), anyList())).thenReturn(List.of(TRANSACTION));
+        when(transactionSorter.sortByAmount(any(OrderType.class), anyList())).thenReturn(List.of(TRANSACTION));
 
         // WHEN
-        List<Transaction> result = transactionService.searchTransaction(ACCOUNT_IBAN, OrderType.ASC);
+        List<Transaction> result = transactionService.findByIban(ACCOUNT_IBAN, OrderType.ASC);
 
         // THEN
         assertThat(result).containsExactly(TRANSACTION);

@@ -1,6 +1,7 @@
 package com.sergiomartinrubio.transactionsservice.controller;
 
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
+import com.sergiomartinrubio.transactionsservice.service.TransactionProcessorService;
 import com.sergiomartinrubio.transactionsservice.service.impl.TransactionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,9 @@ class TransactionControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
+    private TransactionProcessorService transactionProcessorService;
+
+    @MockBean
     private TransactionServiceImpl transactionService;
 
     @Test
@@ -67,7 +71,7 @@ class TransactionControllerTest {
                 .andExpect(status().isCreated());
 
         // THEN
-        verify(transactionService).createTransaction(TRANSACTION);
+        verify(transactionProcessorService).process(TRANSACTION);
     }
 
     @Test
@@ -79,7 +83,7 @@ class TransactionControllerTest {
                 "\"amount\":193.38," +
                 "\"fee\":3.18," +
                 "\"description\":\"Restaurant payment\"}]";
-        when(transactionService.searchTransaction(ACCOUNT_IBAN, null)).thenReturn(List.of(TRANSACTION));
+        when(transactionService.findByIban(ACCOUNT_IBAN, null)).thenReturn(List.of(TRANSACTION));
 
         // WHEN
         MvcResult result = mockMvc.perform(get("/transactions/" + ACCOUNT_IBAN))
