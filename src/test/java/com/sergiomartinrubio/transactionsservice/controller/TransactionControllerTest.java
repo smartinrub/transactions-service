@@ -1,10 +1,7 @@
 package com.sergiomartinrubio.transactionsservice.controller;
 
-import com.sergiomartinrubio.transactionsservice.model.Channel;
-import com.sergiomartinrubio.transactionsservice.model.Status;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
-import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
-import com.sergiomartinrubio.transactionsservice.service.TransactionService;
+import com.sergiomartinrubio.transactionsservice.service.impl.TransactionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -50,7 +47,7 @@ class TransactionControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private TransactionService transactionService;
+    private TransactionServiceImpl transactionService;
 
     @Test
     public void givenTransactionWhenPostRequestToTransactionsThenCreateTransactionIsCalledAndReturnCreated() throws Exception {
@@ -86,38 +83,6 @@ class TransactionControllerTest {
 
         // WHEN
         MvcResult result = mockMvc.perform(get("/transactions/" + ACCOUNT_IBAN))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-
-        // THEN
-        assertThat(result.getResponse().getContentAsString()).isEqualTo(responseBody);
-    }
-
-    @Test
-    public void givenReferenceAndChannelWhenGetTransactionStatusThenReturnTransactionStatus() throws Exception {
-        // GIVEN
-        String responseBody = "{" +
-                "\"reference\":\"f8145c28-4730-4afc-8cf5-11934d94b06f\"," +
-                "\"status\":\"PENDING\"," +
-                "\"amount\":193.38," +
-                "\"fee\":3.18" +
-                "}";
-        String requestBody = "{\"reference\":\"f8145c28-4730-4afc-8cf5-11934d94b06f\"," +
-                "\"channel\":\"CLIENT\"}";
-        TransactionStatus transactionStatus = TransactionStatus.builder()
-                .reference(TRANSACTION_REFERENCE)
-                .status(Status.PENDING)
-                .amount(AMOUNT)
-                .fee(FEE)
-                .build();
-        when(transactionService.getTransactionStatus(TRANSACTION_REFERENCE, Channel.CLIENT)).thenReturn(transactionStatus);
-
-        // WHEN
-        MvcResult result = mockMvc
-                .perform(post("/transactions/status")
-                        .contentType(APPLICATION_JSON)
-                        .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();

@@ -49,7 +49,7 @@ class GetTransactionStatusIntegrationTest {
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
         ResponseEntity<TransactionStatus> response = restTemplate
-                .exchange("/transactions/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
+                .exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
 
         // THEN
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

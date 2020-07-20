@@ -112,7 +112,7 @@ HTTP/1.1 200
 - Request
 
 ```
-POST http://localhost:8080/transactions/status
+POST http://localhost:8080/status
 Content-Type: application/json
 
 {

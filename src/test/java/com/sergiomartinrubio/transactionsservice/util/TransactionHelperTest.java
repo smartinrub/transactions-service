@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TransactionUtilsTest {
+class TransactionHelperTest {
 
     private static final UUID TRANSACTION_REFERENCE = UUID.randomUUID();
     private static final String ACCOUNT_IBAN = "ES9820385778983000760236";
@@ -39,6 +39,8 @@ class TransactionUtilsTest {
             .description("Restaurant payment")
             .build();
 
+    private TransactionHelper transactionHelper = new TransactionHelper();
+
     @Test
     void givenAscOrderWhenSortTransactionsThenReturnedTransactionsInAscOrder() {
         // GIVEN
@@ -47,7 +49,7 @@ class TransactionUtilsTest {
         transactions.add(TRANSACTION_2);
 
         // WHEN
-        List<Transaction> sortedTransactions = TransactionUtils.sortTransactionsByAmount(OrderType.ASC, transactions);
+        List<Transaction> sortedTransactions = transactionHelper.sortTransactionsByAmount(OrderType.ASC, transactions);
 
         // THEN
         assertThat(sortedTransactions).containsExactly(TRANSACTION_2, TRANSACTION_1);
@@ -61,7 +63,7 @@ class TransactionUtilsTest {
         transactions.add(TRANSACTION_2);
 
         // WHEN
-        List<Transaction> sortedTransactions = TransactionUtils.sortTransactionsByAmount(OrderType.DESC, transactions);
+        List<Transaction> sortedTransactions = transactionHelper.sortTransactionsByAmount(OrderType.DESC, transactions);
 
         // THEN
         assertThat(sortedTransactions).containsExactly(TRANSACTION_1, TRANSACTION_2);
@@ -75,7 +77,7 @@ class TransactionUtilsTest {
         transactions.add(TRANSACTION_2);
 
         // WHEN
-        List<Transaction> sortedTransactions = TransactionUtils.sortTransactionsByAmount(null, transactions);
+        List<Transaction> sortedTransactions = transactionHelper.sortTransactionsByAmount(null, transactions);
 
         // THEN
         assertThat(sortedTransactions).containsExactly(TRANSACTION_2, TRANSACTION_1);

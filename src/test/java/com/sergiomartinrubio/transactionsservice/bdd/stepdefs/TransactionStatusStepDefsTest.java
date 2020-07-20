@@ -89,7 +89,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
-        response = restTemplate.exchange("/transactions/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
+        response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
     }
 
     @When("I check the status from {string} or {string} channel")
@@ -108,7 +108,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
-        response = restTemplate.exchange("/transactions/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
+        response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
     }
 
     @And("And the transaction date is equals to today")
@@ -117,7 +117,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
-        response = restTemplate.exchange("/transactions/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
+        response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
 
     }
 
@@ -127,7 +127,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
-        response = restTemplate.exchange("/transactions/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
+        response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
 
     }
 

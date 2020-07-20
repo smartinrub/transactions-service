@@ -2,10 +2,13 @@ package com.sergiomartinrubio.transactionsservice.service;
 
 import com.sergiomartinrubio.transactionsservice.exception.AccountNotFoundException;
 import com.sergiomartinrubio.transactionsservice.exception.InvalidTransactionException;
-import com.sergiomartinrubio.transactionsservice.model.*;
+import com.sergiomartinrubio.transactionsservice.model.Account;
+import com.sergiomartinrubio.transactionsservice.model.OrderType;
+import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.repository.AccountRepository;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
-import com.sergiomartinrubio.transactionsservice.util.TransactionStatusTransformer;
+import com.sergiomartinrubio.transactionsservice.service.impl.TransactionServiceImpl;
+import com.sergiomartinrubio.transactionsservice.util.TransactionHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,19 +47,21 @@ class TransactionServiceTest {
     private AccountRepository accountRepository;
 
     @Mock
-    private TransactionRepository transactionRepository;
+    private TransactionHelper transactionHelper;
 
     @Mock
-    private TransactionStatusTransformer transactionStatusTransformer;
+    private TransactionRepository transactionRepository;
 
     @InjectMocks
-    private TransactionService transactionService;
+    private TransactionServiceImpl transactionService;
 
     @Test
     void givenTransactionWhenCreateTransactionThenCallRepositoryToSaveTransaction() {
         // GIVEN
+        Account account = new Account(ACCOUNT_IBAN, BigDecimal.valueOf(100L));
         when(accountRepository.findById(ACCOUNT_IBAN))
-                .thenReturn(Optional.of(new Account(ACCOUNT_IBAN, BigDecimal.valueOf(100L))));
+                .thenReturn(Optional.of(account));
+        when(transactionHelper.getFinalBalance(TRANSACTION, account)).thenReturn(new BigDecimal("293.38"));
 
         // WHEN
         transactionService.createTransaction(TRANSACTION);
@@ -91,9 +96,11 @@ class TransactionServiceTest {
                 .fee(FEE)
                 .description("Restaurant payment")
                 .build();
+        Account account = new Account(ACCOUNT_IBAN, BigDecimal.valueOf(200L));
         when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.empty());
         when(accountRepository.findById(ACCOUNT_IBAN))
-                .thenReturn(Optional.of(new Account(ACCOUNT_IBAN, BigDecimal.valueOf(200L))));
+                .thenReturn(Optional.of(account));
+        when(transactionHelper.getFinalBalance(transaction, account)).thenReturn(new BigDecimal(-50));
 
         // WHEN
         // THEN
@@ -109,43 +116,13 @@ class TransactionServiceTest {
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(TRANSACTION);
         when(transactionRepository.searchTransaction(ACCOUNT_IBAN)).thenReturn(transactions);
+        when(transactionHelper.sortTransactionsByAmount(any(OrderType.class), anyList())).thenReturn(List.of(TRANSACTION));
 
         // WHEN
         List<Transaction> result = transactionService.searchTransaction(ACCOUNT_IBAN, OrderType.ASC);
 
         // THEN
         assertThat(result).containsExactly(TRANSACTION);
-    }
-
-    @Test
-    void givenReferenceAndChannelWhenGetTransactionStatusThenReturnTransactionStatus() {
-        // GIVEN
-        TransactionStatus transactionStatus = TransactionStatus.builder()
-                .reference(TRANSACTION_REFERENCE)
-                .status(Status.PENDING)
-                .amount(AMOUNT)
-                .fee(FEE)
-                .build();
-        when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.of(TRANSACTION));
-        when(transactionStatusTransformer.transform(TRANSACTION, Channel.CLIENT)).thenReturn(transactionStatus);
-
-        // WHEN
-        TransactionStatus result = transactionService.getTransactionStatus(TRANSACTION_REFERENCE, Channel.CLIENT);
-
-        // THEN
-        assertThat(result).isEqualTo(transactionStatus);
-    }
-
-    @Test
-    void givenInvalidReferenceWhenGetTransactionStatusThenStatusIsInvalid() {
-        // GIVEN
-        when(transactionRepository.findById(TRANSACTION_REFERENCE)).thenReturn(Optional.empty());
-
-        // WHEN
-        TransactionStatus result = transactionService.getTransactionStatus(TRANSACTION_REFERENCE, Channel.CLIENT);
-
-        // THEN
-        assertThat(result.getStatus()).isEqualTo(Status.INVALID);
     }
 
 }
