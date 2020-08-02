@@ -5,6 +5,8 @@ import com.sergiomartinrubio.transactionsservice.model.Channel;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatusParams;
+import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -36,7 +38,15 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
     private ResponseEntity<TransactionStatus> response;
 
     @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
     private TestRestTemplate restTemplate;
+
+    @Before
+    public void setup() {
+        transactionRepository.deleteAll();
+    }
 
     @Given("A transaction that is stored in our system")
     public void a_transaction_that_is_stored_in_our_system() {
