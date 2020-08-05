@@ -55,7 +55,6 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
 
     @Before
     public void setup() {
-        response = null;
         transactionRepository.deleteAll();
     }
 
