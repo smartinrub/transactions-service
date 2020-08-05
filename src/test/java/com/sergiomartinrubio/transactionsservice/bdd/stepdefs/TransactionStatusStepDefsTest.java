@@ -27,9 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TransactionStatusStepDefsTest extends CucumberSpringContextConfiguration {
 
     private static final String ACCOUNT_IBAN = "ES9820385778983000760236";
-    private static final UUID TRANSACTION_REFERENCE_BEFORE_TODAY = UUID.fromString("f8145c28-4730-4afc-8cf5-11934d94b06f");
-    private static final UUID TRANSACTION_REFERENCE_TODAY = UUID.fromString("39e819bc-f863-4b9b-8f3f-d6c107c21142");
-    private static final UUID TRANSACTION_REFERENCE_AFTER_TODAY = UUID.fromString("cbaad0a9-e94c-4e77-adce-bd797dd70f62");
+    private static final UUID TRANSACTION_REFERENCE = UUID.randomUUID();
     private static final BigDecimal AMOUNT = new BigDecimal("193.38");
     private static final BigDecimal FEE = new BigDecimal("3.18");
     private static final String DESCRIPTION = "Restaurant payment";
@@ -62,40 +60,19 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
 
     @Given("A transaction that is stored in our system with date before today")
     public void a_transaction_that_is_stored_in_our_system_with_date_before_today() {
-        Transaction transactionBeforeToday = Transaction.builder()
-                .reference(TRANSACTION_REFERENCE_BEFORE_TODAY)
-                .accountIban(ACCOUNT_IBAN)
-                .date(DATE_BEFORE_NOW)
-                .amount(AMOUNT)
-                .fee(FEE)
-                .description(DESCRIPTION)
-                .build();
+        Transaction transactionBeforeToday = createTransaction(DATE_BEFORE_NOW);
         transactionService.save(transactionBeforeToday);
     }
 
     @Given("A transaction that is stored in our system with date today")
     public void a_transaction_that_is_stored_in_our_system_with_date_today() {
-        Transaction transactionToday = Transaction.builder()
-                .reference(TRANSACTION_REFERENCE_TODAY)
-                .accountIban(ACCOUNT_IBAN)
-                .date(DATE_NOW)
-                .amount(AMOUNT)
-                .fee(FEE)
-                .description(DESCRIPTION)
-                .build();
+        Transaction transactionToday = createTransaction(DATE_NOW);
         transactionService.save(transactionToday);
     }
 
     @Given("A transaction that is stored in our system with date after today")
     public void a_transaction_that_is_stored_in_our_system_with_date_after_today() {
-        Transaction transactionAfterToday = Transaction.builder()
-                .reference(TRANSACTION_REFERENCE_AFTER_TODAY)
-                .accountIban(ACCOUNT_IBAN)
-                .date(DATE_AFTER_NOW)
-                .amount(AMOUNT)
-                .fee(FEE)
-                .description(DESCRIPTION)
-                .build();
+        Transaction transactionAfterToday = createTransaction(DATE_AFTER_NOW);
         transactionService.save(transactionAfterToday);
     }
 
@@ -121,7 +98,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
 
     @And("And the transaction date is before today")
     public void and_the_transaction_date_is_before_today() {
-        params.setReference(TRANSACTION_REFERENCE_BEFORE_TODAY);
+        params.setReference(TRANSACTION_REFERENCE);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
@@ -130,7 +107,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
 
     @And("And the transaction date is equals to today")
     public void and_the_transaction_date_is_equals_to_today() {
-        params.setReference(TRANSACTION_REFERENCE_TODAY);
+        params.setReference(TRANSACTION_REFERENCE);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
@@ -140,7 +117,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
 
     @And("And the transaction date is greater than today")
     public void and_the_transaction_date_is_greater_than_today() {
-        params.setReference(TRANSACTION_REFERENCE_AFTER_TODAY);
+        params.setReference(TRANSACTION_REFERENCE);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
@@ -166,6 +143,17 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
     @And("And the fee")
     public void and_the_fee() {
         assertThat(response.getBody().getFee()).isEqualTo(FEE);
+    }
+
+    private Transaction createTransaction(ZonedDateTime date) {
+        return Transaction.builder()
+                .reference(TRANSACTION_REFERENCE)
+                .accountIban(ACCOUNT_IBAN)
+                .date(date)
+                .amount(AMOUNT)
+                .fee(FEE)
+                .description(DESCRIPTION)
+                .build();
     }
 
 }
