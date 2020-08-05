@@ -7,14 +7,14 @@ Feature: Return transaction status
     Then The system returns the status 'INVALID'
 
   Scenario: call to /transactions/{reference}/status with channel CLIENT or AMT and transaction is stored and before today
-    Given A transaction that is stored in our system
+    Given A transaction that is stored in our system with date before today
     When I check the status from 'CLIENT' or 'ATM' channel
     And And the transaction date is before today
     Then The system returns the status 'SETTLED'
     And And the amount substracting the fee
 
   Scenario: call to /transactions/{reference}/status with channel INTERNAL and transaction is stored and before today
-    Given A transaction that is stored in our system
+    Given A transaction that is stored in our system with date before today
     When I check the status from 'INTERNAL' channel
     And And the transaction date is before today
     Then The system returns the status 'SETTLED'
@@ -22,14 +22,14 @@ Feature: Return transaction status
     And And the fee
 
   Scenario: call to /transactions/{reference}/status with channel CLIENT or AMT and transaction is stored and today
-    Given A transaction that is stored in our system
+    Given A transaction that is stored in our system with date today
     When I check the status from 'CLIENT' or 'ATM' channel
     And And the transaction date is equals to today
     Then The system returns the status 'PENDING'
     And And the amount substracting the fee
 
   Scenario: call to /transactions/{reference}/status with channel INTERNAL and transaction is stored and today
-    Given A transaction that is stored in our system
+    Given A transaction that is stored in our system with date today
     When I check the status from 'INTERNAL' channel
     And And the transaction date is equals to today
     Then The system returns the status 'PENDING'
@@ -37,21 +37,21 @@ Feature: Return transaction status
     And And the fee
 
   Scenario: call to /transactions/{reference}/status with channel CLIENT and transaction is stored and greater than today
-    Given A transaction that is stored in our system
+    Given A transaction that is stored in our system with date after today
     When I check the status from 'CLIENT' channel
     And And the transaction date is greater than today
     Then The system returns the status 'FUTURE'
     And And the amount substracting the fee
 
   Scenario: call to /transactions/{reference}/status with channel ATM and transaction is stored and greater than today
-    Given A transaction that is stored in our system
+    Given A transaction that is stored in our system with date after today
     When I check the status from 'ATM' channel
     And And the transaction date is greater than today
     Then The system returns the status 'PENDING'
     And And the amount substracting the fee
 
   Scenario: call to /transactions/{reference}/status with channel INTERNAL and transaction is stored and greater than today
-    Given A transaction that is stored in our system
+    Given A transaction that is stored in our system with date after today
     When I check the status from 'INTERNAL' channel
     And And the transaction date is greater than today
     Then The system returns the status 'FUTURE'

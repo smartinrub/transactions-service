@@ -6,6 +6,7 @@ import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatusParams;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
+import com.sergiomartinrubio.transactionsservice.service.TransactionService;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -17,9 +18,9 @@ import org.springframework.http.*;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -32,13 +33,19 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
     private static final BigDecimal AMOUNT = new BigDecimal("193.38");
     private static final BigDecimal FEE = new BigDecimal("3.18");
     private static final String DESCRIPTION = "Restaurant payment";
+    private static final ZonedDateTime DATE_BEFORE_NOW = ZonedDateTime.now().minus(1, DAYS);
+    private static final ZonedDateTime DATE_NOW = ZonedDateTime.now();
+    private static final ZonedDateTime DATE_AFTER_NOW = ZonedDateTime.now().plus(1, DAYS);
 
-    private TransactionStatusParams params = new TransactionStatusParams();
+    private final TransactionStatusParams params = new TransactionStatusParams();
 
     private ResponseEntity<TransactionStatus> response;
 
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private TransactionService transactionService;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -48,48 +55,48 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
         transactionRepository.deleteAll();
     }
 
-    @Given("A transaction that is stored in our system")
-    public void a_transaction_that_is_stored_in_our_system() {
-        Transaction transaction = Transaction.builder()
-                .reference(TRANSACTION_REFERENCE_BEFORE_TODAY)
-                .accountIban(ACCOUNT_IBAN)
-                .date(ZonedDateTime.now().minus(1, ChronoUnit.DAYS))
-                .amount(AMOUNT)
-                .fee(FEE)
-                .description(DESCRIPTION)
-                .build();
-        HttpEntity<Transaction> request = new HttpEntity<>(transaction);
-
-        restTemplate.postForEntity("/transactions", request, String.class);
-
-        transaction = Transaction.builder()
-                .reference(TRANSACTION_REFERENCE_TODAY)
-                .accountIban(ACCOUNT_IBAN)
-                .date(ZonedDateTime.now())
-                .amount(AMOUNT)
-                .fee(FEE)
-                .description(DESCRIPTION)
-                .build();
-        request = new HttpEntity<>(transaction);
-
-        restTemplate.postForEntity("/transactions", request, String.class);
-
-        transaction = Transaction.builder()
-                .reference(TRANSACTION_REFERENCE_AFTER_TODAY)
-                .accountIban(ACCOUNT_IBAN)
-                .date(ZonedDateTime.now().plus(1, ChronoUnit.DAYS))
-                .amount(AMOUNT)
-                .fee(FEE)
-                .description(DESCRIPTION)
-                .build();
-        request = new HttpEntity<>(transaction);
-
-        restTemplate.postForEntity("/transactions", request, String.class);
-    }
-
     @Given("A transaction that is not stored in our system")
     public void a_transaction_that_is_not_stored_in_our_system() {
 
+    }
+
+    @Given("A transaction that is stored in our system with date before today")
+    public void a_transaction_that_is_stored_in_our_system_with_date_before_today() {
+        Transaction transactionBeforeToday = Transaction.builder()
+                .reference(TRANSACTION_REFERENCE_BEFORE_TODAY)
+                .accountIban(ACCOUNT_IBAN)
+                .date(DATE_BEFORE_NOW)
+                .amount(AMOUNT)
+                .fee(FEE)
+                .description(DESCRIPTION)
+                .build();
+        transactionService.save(transactionBeforeToday);
+    }
+
+    @Given("A transaction that is stored in our system with date today")
+    public void a_transaction_that_is_stored_in_our_system_with_date_today() {
+        Transaction transactionToday = Transaction.builder()
+                .reference(TRANSACTION_REFERENCE_TODAY)
+                .accountIban(ACCOUNT_IBAN)
+                .date(DATE_NOW)
+                .amount(AMOUNT)
+                .fee(FEE)
+                .description(DESCRIPTION)
+                .build();
+        transactionService.save(transactionToday);
+    }
+
+    @Given("A transaction that is stored in our system with date after today")
+    public void a_transaction_that_is_stored_in_our_system_with_date_after_today() {
+        Transaction transactionAfterToday = Transaction.builder()
+                .reference(TRANSACTION_REFERENCE_AFTER_TODAY)
+                .accountIban(ACCOUNT_IBAN)
+                .date(DATE_AFTER_NOW)
+                .amount(AMOUNT)
+                .fee(FEE)
+                .description(DESCRIPTION)
+                .build();
+        transactionService.save(transactionAfterToday);
     }
 
     @When("I check the status from any channel")
