@@ -14,7 +14,10 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -22,6 +25,8 @@ import java.util.UUID;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
 public class TransactionStatusStepDefsTest extends CucumberSpringContextConfiguration {
@@ -50,6 +55,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
 
     @Before
     public void setup() {
+        response = null;
         transactionRepository.deleteAll();
     }
 
@@ -81,48 +87,19 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
         params.setReference(UUID.randomUUID());
         params.setChannel(Channel.CLIENT);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        httpHeaders.add(CONTENT_TYPE, APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
         response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
-    }
-
-    @When("I check the status from {string} or {string} channel")
-    public void i_check_the_status_from_client_or_atm_channel(String clientChannel, String atmChannel) {
-        params.setChannel(Channel.valueOf(clientChannel));
     }
 
     @When("I check the status from {string} channel")
-    public void i_check_the_status_from_internal_channel(String clientChannel) {
+    public void i_check_the_status_from_a_given_channel(String clientChannel) {
         params.setChannel(Channel.valueOf(clientChannel));
-    }
-
-    @And("And the transaction date is before today")
-    public void and_the_transaction_date_is_before_today() {
         params.setReference(TRANSACTION_REFERENCE);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        httpHeaders.add(CONTENT_TYPE, APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
         response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
-    }
-
-    @And("And the transaction date is equals to today")
-    public void and_the_transaction_date_is_equals_to_today() {
-        params.setReference(TRANSACTION_REFERENCE);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
-        response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
-
-    }
-
-    @And("And the transaction date is greater than today")
-    public void and_the_transaction_date_is_greater_than_today() {
-        params.setReference(TRANSACTION_REFERENCE);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
-        response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
-
     }
 
     @Then("The system returns the status {string}")
