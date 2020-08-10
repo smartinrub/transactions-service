@@ -1,5 +1,7 @@
 Feature: Return transaction status
-  Return status and additional information for a transaction
+  As an user
+  I want to be able to retrieve the status of a transaction
+  So that I can see the transaction status, amount and fee
 
   Scenario: call to /status and transaction is not stored
     Given A transaction that is not stored in our system
