@@ -60,7 +60,7 @@ class TransactionServiceTest {
     }
 
     @Test
-    void givenTransactionWhenSaveThenCallSave() {
+    void shouldSaveTransaction() {
         // WHEN
         transactionService.save(TRANSACTION);
 

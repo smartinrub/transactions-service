@@ -7,7 +7,7 @@ import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatusParams;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
 import com.sergiomartinrubio.transactionsservice.service.TransactionService;
-import io.cucumber.java.Before;
+import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -53,7 +53,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Before
+    @After
     public void setup() {
         transactionRepository.deleteAll();
     }
