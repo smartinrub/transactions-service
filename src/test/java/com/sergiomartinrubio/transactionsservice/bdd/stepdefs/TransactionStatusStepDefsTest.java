@@ -5,8 +5,8 @@ import com.sergiomartinrubio.transactionsservice.model.*;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
 import com.sergiomartinrubio.transactionsservice.service.TransactionService;
 import io.cucumber.java.After;
+import io.cucumber.java.DataTableType;
 import io.cucumber.java.ParameterType;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -19,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.UUID;
+import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +41,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
     private final TransactionStatusParams params = new TransactionStatusParams();
 
     private ResponseEntity<TransactionStatus> response;
+    private final List<ResponseEntity<TransactionStatus>> responses = new ArrayList<>();
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -51,14 +52,25 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @ParameterType("CLIENT|ATM|INTERNAL")
-    public Channel channel(String channel) {
-        return Channel.valueOf(channel);
-    }
-
     @ParameterType("PENDING|SETTLED|FUTURE|INVALID")
     public Status status(String channel) {
         return Status.valueOf(channel);
+    }
+
+    @DataTableType
+    public TransactionStatus transactionStatusEntry(Map<String, String> entry) {
+        return TransactionStatus.builder()
+                .status(Status.valueOf(entry.get("status")))
+                .amount(new BigDecimal(entry.get("amount")))
+                .fee(Optional.ofNullable(entry.get("fee"))
+                        .map((BigDecimal::new))
+                        .orElse(null))
+                .build();
+    }
+
+    @DataTableType
+    public Channel channelEntry(Map<String, String> entry) {
+        return Channel.valueOf(entry.get("channel"));
     }
 
     @After
@@ -66,24 +78,24 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
         transactionRepository.deleteAll();
     }
 
-    @Given("A transaction that is not stored in our system")
+    @Given("a transaction that is not stored in our system")
     public void a_transaction_that_is_not_stored_in_our_system() {
 
     }
 
-    @Given("A transaction that is stored in our system with date before today")
+    @Given("a transaction that is stored in our system with date before today")
     public void a_transaction_that_is_stored_in_our_system_with_date_before_today() {
         Transaction transactionBeforeToday = createTransaction(DATE_BEFORE_NOW);
         transactionService.save(transactionBeforeToday);
     }
 
-    @Given("A transaction that is stored in our system with date today")
+    @Given("a transaction that is stored in our system with date today")
     public void a_transaction_that_is_stored_in_our_system_with_date_today() {
         Transaction transactionToday = createTransaction(DATE_NOW);
         transactionService.save(transactionToday);
     }
 
-    @Given("A transaction that is stored in our system with date after today")
+    @Given("a transaction that is stored in our system with date after today")
     public void a_transaction_that_is_stored_in_our_system_with_date_after_today() {
         Transaction transactionAfterToday = createTransaction(DATE_AFTER_NOW);
         transactionService.save(transactionAfterToday);
@@ -97,36 +109,35 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
         httpHeaders.add(CONTENT_TYPE, APPLICATION_JSON_VALUE);
         HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
         response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
+
     }
 
-    @When("I check the status from {channel} channel")
-    public void i_check_the_status_from_a_given_channel(Channel channel) {
-        params.setChannel(channel);
-        params.setReference(TRANSACTION_REFERENCE);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(CONTENT_TYPE, APPLICATION_JSON_VALUE);
-        HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
-        response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
+    @When("I check the status from a channel:")
+    public void i_check_the_status_from_a_channel(List<Channel> channels) {
+        for (Channel channel : channels) {
+            params.setChannel(channel);
+            params.setReference(TRANSACTION_REFERENCE);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(CONTENT_TYPE, APPLICATION_JSON_VALUE);
+            HttpEntity<TransactionStatusParams> statusRequest = new HttpEntity<>(params, httpHeaders);
+            ResponseEntity<TransactionStatus> response = restTemplate
+                    .exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
+            responses.add(response);
+        }
     }
 
-    @Then("The system returns the status {status}")
+    @Then("the system returns the status {status}")
     public void the_system_returns_the_status(Status status) {
         assertThat(response.getBody().getStatus()).isEqualTo(status);
     }
 
-    @And("And the amount substracting the fee")
-    public void and_the_amount_substracting_the_fee() {
-        assertThat(response.getBody().getAmount()).isEqualTo(AMOUNT.subtract(FEE));
-    }
-
-    @And("And the amount")
-    public void and_the_amount() {
-        assertThat(response.getBody().getAmount()).isEqualTo(AMOUNT);
-    }
-
-    @And("And the fee")
-    public void and_the_fee() {
-        assertThat(response.getBody().getFee()).isEqualTo(FEE);
+    @Then("the status, amount and fees are:")
+    public void the_status_amount_and_fee_are(List<TransactionStatus> transactionStatusList) {
+        for (int i = 0; i < transactionStatusList.size(); i++) {
+            assertThat(responses.get(i).getBody().getStatus()).isEqualTo(transactionStatusList.get(i).getStatus());
+            assertThat(responses.get(i).getBody().getAmount()).isEqualTo(transactionStatusList.get(i).getAmount());
+            assertThat(responses.get(i).getBody().getFee()).isEqualTo(transactionStatusList.get(i).getFee());
+        }
     }
 
     private Transaction createTransaction(ZonedDateTime date) {
