@@ -8,13 +8,13 @@ Feature: Return transaction status
     When I check the status from any channel
     Then The system returns the status INVALID
 
-  Scenario: call to /status with channel CLIENT or AMT and transaction is stored and before today
+  Scenario: call to /status with channel CLIENT and transaction is stored and before today
     Given A transaction that is stored in our system with date before today
     When I check the status from CLIENT channel
     Then The system returns the status SETTLED
     And And the amount substracting the fee
 
-  Scenario: call to /status with channel CLIENT or AMT and transaction is stored and before today
+  Scenario: call to /status with channel AMT and transaction is stored and before today
     Given A transaction that is stored in our system with date before today
     When I check the status from ATM channel
     Then The system returns the status SETTLED
@@ -27,13 +27,13 @@ Feature: Return transaction status
     And And the amount
     And And the fee
 
-  Scenario: call to /status with channel CLIENT or AMT and transaction is stored and today
+  Scenario: call to /status with channel CLIENT and transaction is stored and today
     Given A transaction that is stored in our system with date today
     When I check the status from CLIENT channel
     Then The system returns the status PENDING
     And And the amount substracting the fee
 
-  Scenario: call to /status with channel CLIENT or AMT and transaction is stored and today
+  Scenario: call to /status with channel AMT and transaction is stored and today
     Given A transaction that is stored in our system with date today
     When I check the status from ATM channel
     Then The system returns the status PENDING
