@@ -1,13 +1,11 @@
 package com.sergiomartinrubio.transactionsservice.bdd.stepdefs;
 
 import com.sergiomartinrubio.transactionsservice.bdd.CucumberSpringContextConfiguration;
-import com.sergiomartinrubio.transactionsservice.model.Channel;
-import com.sergiomartinrubio.transactionsservice.model.Transaction;
-import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
-import com.sergiomartinrubio.transactionsservice.model.TransactionStatusParams;
+import com.sergiomartinrubio.transactionsservice.model.*;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
 import com.sergiomartinrubio.transactionsservice.service.TransactionService;
 import io.cucumber.java.After;
+import io.cucumber.java.ParameterType;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -53,6 +51,16 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @ParameterType("CLIENT|ATM|INTERNAL")
+    public Channel channel(String channel) {
+        return Channel.valueOf(channel);
+    }
+
+    @ParameterType("PENDING|SETTLED|FUTURE|INVALID")
+    public Status status(String channel) {
+        return Status.valueOf(channel);
+    }
+
     @After
     public void setup() {
         transactionRepository.deleteAll();
@@ -91,9 +99,9 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
         response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
     }
 
-    @When("I check the status from {string} channel")
-    public void i_check_the_status_from_a_given_channel(String clientChannel) {
-        params.setChannel(Channel.valueOf(clientChannel));
+    @When("I check the status from {channel} channel")
+    public void i_check_the_status_from_a_given_channel(Channel channel) {
+        params.setChannel(channel);
         params.setReference(TRANSACTION_REFERENCE);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(CONTENT_TYPE, APPLICATION_JSON_VALUE);
@@ -101,9 +109,9 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
         response = restTemplate.exchange("/status", HttpMethod.POST, statusRequest, TransactionStatus.class);
     }
 
-    @Then("The system returns the status {string}")
-    public void the_system_returns_the_status(String transactionStatus) {
-        assertThat(response.getBody().getStatus().toString()).isEqualTo(transactionStatus);
+    @Then("The system returns the status {status}")
+    public void the_system_returns_the_status(Status status) {
+        assertThat(response.getBody().getStatus()).isEqualTo(status);
     }
 
     @And("And the amount substracting the fee")
