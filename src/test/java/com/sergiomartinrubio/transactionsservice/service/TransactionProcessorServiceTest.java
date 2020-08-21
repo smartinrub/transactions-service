@@ -1,11 +1,8 @@
-package com.sergiomartinrubio.transactionsservice.service.impl;
+package com.sergiomartinrubio.transactionsservice.service;
 
 import com.sergiomartinrubio.transactionsservice.exception.InvalidTransactionException;
 import com.sergiomartinrubio.transactionsservice.model.Account;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
-import com.sergiomartinrubio.transactionsservice.service.AccountBalanceCalculator;
-import com.sergiomartinrubio.transactionsservice.service.AccountService;
-import com.sergiomartinrubio.transactionsservice.service.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TransactionProcessorServiceImplTest {
+class TransactionProcessorServiceTest {
 
     private static final UUID TRANSACTION_REFERENCE = UUID.randomUUID();
     private static final String ACCOUNT_IBAN = "ES9820385778983000760236";
@@ -47,7 +44,7 @@ class TransactionProcessorServiceImplTest {
     private AccountBalanceCalculator accountBalanceCalculator;
 
     @InjectMocks
-    private TransactionProcessorServiceImpl transactionProcessorService;
+    private TransactionProcessorService transactionProcessorService;
 
     @Test
     void givenTransactionWhenCreateTransactionThenCallRepositoryToSaveTransaction() {

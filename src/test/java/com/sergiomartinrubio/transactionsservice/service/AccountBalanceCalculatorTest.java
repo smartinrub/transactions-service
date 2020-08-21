@@ -1,4 +1,4 @@
-package com.sergiomartinrubio.transactionsservice.service.impl;
+package com.sergiomartinrubio.transactionsservice.service;
 
 import com.sergiomartinrubio.transactionsservice.model.Account;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AccountBalanceCalculatorImplTest {
+class AccountBalanceCalculatorTest {
 
     private static final UUID TRANSACTION_REFERENCE = UUID.randomUUID();
     private static final String ACCOUNT_IBAN = "ES9820385778983000760236";
@@ -26,7 +26,7 @@ class AccountBalanceCalculatorImplTest {
             .description("Restaurant payment")
             .build();
 
-    private final AccountBalanceCalculatorImpl accountBalanceCalculator = new AccountBalanceCalculatorImpl();
+    private final AccountBalanceCalculator accountBalanceCalculator = new AccountBalanceCalculator();
 
     @Test
     void givenTransactionAndAccountWhenCalculateThenReturnBalance() {

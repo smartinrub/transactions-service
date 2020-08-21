@@ -1,4 +1,4 @@
-package com.sergiomartinrubio.transactionsservice.service.impl;
+package com.sergiomartinrubio.transactionsservice.service;
 
 import com.sergiomartinrubio.transactionsservice.exception.AccountNotFoundException;
 import com.sergiomartinrubio.transactionsservice.model.Account;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AccountServiceImplTest {
+class AccountServiceTest {
 
     private static final String ACCOUNT_IBAN = "ES9820385778983000760236";
 
@@ -26,7 +26,7 @@ class AccountServiceImplTest {
     private AccountRepository accountRepository;
 
     @InjectMocks
-    private AccountServiceImpl accountService;
+    private AccountService accountService;
 
 
     @Test

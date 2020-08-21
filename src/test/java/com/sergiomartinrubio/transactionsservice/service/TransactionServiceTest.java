@@ -3,7 +3,6 @@ package com.sergiomartinrubio.transactionsservice.service;
 import com.sergiomartinrubio.transactionsservice.model.OrderType;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
-import com.sergiomartinrubio.transactionsservice.service.impl.TransactionServiceImpl;
 import com.sergiomartinrubio.transactionsservice.util.TransactionSorter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +44,7 @@ class TransactionServiceTest {
     private TransactionRepository transactionRepository;
 
     @InjectMocks
-    private TransactionServiceImpl transactionService;
+    private TransactionService transactionService;
 
     @Test
     void givenTransactionReferenceWhenFindByIdThenReturnTransaction() {

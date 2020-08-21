@@ -2,7 +2,7 @@ package com.sergiomartinrubio.transactionsservice.controller;
 
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.service.TransactionProcessorService;
-import com.sergiomartinrubio.transactionsservice.service.impl.TransactionServiceImpl;
+import com.sergiomartinrubio.transactionsservice.service.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -51,7 +51,7 @@ class TransactionControllerTest {
     private TransactionProcessorService transactionProcessorService;
 
     @MockBean
-    private TransactionServiceImpl transactionService;
+    private TransactionService transactionService;
 
     @Test
     public void givenTransactionWhenPostRequestToTransactionsThenCreateTransactionIsCalledAndReturnCreated() throws Exception {

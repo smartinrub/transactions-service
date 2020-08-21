@@ -5,7 +5,6 @@ import com.sergiomartinrubio.transactionsservice.model.Status;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.model.TransactionStatus;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
-import com.sergiomartinrubio.transactionsservice.service.impl.TransactionStatusServiceImpl;
 import com.sergiomartinrubio.transactionsservice.util.TransactionStatusTransformer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +44,7 @@ class TransactionStatusServiceTest {
     private TransactionStatusTransformer transactionStatusTransformer;
 
     @InjectMocks
-    private TransactionStatusServiceImpl transactionStatusService;
+    private TransactionStatusService transactionStatusService;
 
     @Test
     void givenReferenceAndChannelWhenGetTransactionStatusThenReturnTransactionStatus() {

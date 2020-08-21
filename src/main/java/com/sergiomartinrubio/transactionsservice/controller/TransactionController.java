@@ -3,7 +3,7 @@ package com.sergiomartinrubio.transactionsservice.controller;
 import com.sergiomartinrubio.transactionsservice.model.OrderType;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
 import com.sergiomartinrubio.transactionsservice.service.TransactionProcessorService;
-import com.sergiomartinrubio.transactionsservice.service.impl.TransactionServiceImpl;
+import com.sergiomartinrubio.transactionsservice.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/transactions")
 public class TransactionController {
 
-    private final TransactionServiceImpl transactionService;
+    private final TransactionService transactionService;
     private final TransactionProcessorService transactionProcessorService;
 
     @ResponseStatus(HttpStatus.CREATED)

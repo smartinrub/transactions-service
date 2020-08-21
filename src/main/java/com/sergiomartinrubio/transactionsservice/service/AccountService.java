@@ -1,12 +1,25 @@
 package com.sergiomartinrubio.transactionsservice.service;
 
+import com.sergiomartinrubio.transactionsservice.exception.AccountNotFoundException;
 import com.sergiomartinrubio.transactionsservice.model.Account;
+import com.sergiomartinrubio.transactionsservice.repository.AccountRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-public interface AccountService {
+@Service
+@RequiredArgsConstructor
+public class AccountService {
 
-    Account findById(String accountIban);
+    private final AccountRepository accountRepository;
 
-    void updateBalance(BigDecimal balance, String accountIban);
+    public Account findById(String accountIban) {
+        return accountRepository.findById(accountIban)
+                .orElseThrow(() -> new AccountNotFoundException(accountIban));
+    }
+
+    public void updateBalance(BigDecimal balance, String accountIban) {
+        accountRepository.updateBalance(balance, accountIban);
+    }
 }

@@ -2,17 +2,33 @@ package com.sergiomartinrubio.transactionsservice.service;
 
 import com.sergiomartinrubio.transactionsservice.model.OrderType;
 import com.sergiomartinrubio.transactionsservice.model.Transaction;
+import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
+import com.sergiomartinrubio.transactionsservice.util.TransactionSorter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface TransactionService {
+@Service
+@RequiredArgsConstructor
+public class TransactionService {
 
-    Optional<Transaction> findById(UUID reference);
+    private final TransactionRepository transactionRepository;
+    private final TransactionSorter transactionSorter;
 
-    void save(Transaction transaction);
+    public Optional<Transaction> findById(UUID reference) {
+        return transactionRepository.findById(reference);
+    }
 
-    List<Transaction> findByIban(String accountIban, OrderType orderType);
+    public void save(Transaction transaction) {
+        transactionRepository.save(transaction);
+    }
+
+    public List<Transaction> findByIban(String accountIban, OrderType orderType) {
+        List<Transaction> transactions = transactionRepository.searchTransaction(accountIban);
+        return transactionSorter.sortByAmount(orderType, transactions);
+    }
 
 }
