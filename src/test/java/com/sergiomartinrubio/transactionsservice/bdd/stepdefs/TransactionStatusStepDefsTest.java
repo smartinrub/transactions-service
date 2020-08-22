@@ -128,15 +128,19 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
 
     @Then("the system returns the status {status}")
     public void the_system_returns_the_status(Status status) {
-        assertThat(response.getBody().getStatus()).isEqualTo(status);
+        TransactionStatus body = response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getStatus()).isEqualTo(status);
     }
 
     @Then("the status, amount and fees are:")
     public void the_status_amount_and_fee_are(List<TransactionStatus> transactionStatusList) {
         for (int i = 0; i < transactionStatusList.size(); i++) {
-            assertThat(responses.get(i).getBody().getStatus()).isEqualTo(transactionStatusList.get(i).getStatus());
-            assertThat(responses.get(i).getBody().getAmount()).isEqualTo(transactionStatusList.get(i).getAmount());
-            assertThat(responses.get(i).getBody().getFee()).isEqualTo(transactionStatusList.get(i).getFee());
+            TransactionStatus body = responses.get(i).getBody();
+            assertThat(body).isNotNull();
+            assertThat(body.getStatus()).isEqualTo(transactionStatusList.get(i).getStatus());
+            assertThat(body.getAmount()).isEqualTo(transactionStatusList.get(i).getAmount());
+            assertThat(body.getFee()).isEqualTo(transactionStatusList.get(i).getFee());
         }
     }
 
