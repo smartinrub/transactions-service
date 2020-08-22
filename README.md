@@ -8,7 +8,7 @@
 * [API Usage](#api-usage)
 
 ## General info
-This project is simple Lorem ipsum dolor generator.
+This application is to store transaction and get transaction status
 	
 ## Technologies
 Project is created with:
