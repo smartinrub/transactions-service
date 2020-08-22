@@ -1,4 +1,4 @@
-package com.sergiomartinrubio.transactionsservice.bdd;
+package com.sergiomartinrubio.transactionsservice.acceptancetests;
 
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;

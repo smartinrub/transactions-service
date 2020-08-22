@@ -1,6 +1,6 @@
-package com.sergiomartinrubio.transactionsservice.bdd.stepdefs;
+package com.sergiomartinrubio.transactionsservice.acceptancetests.stepdefs;
 
-import com.sergiomartinrubio.transactionsservice.bdd.CucumberSpringContextConfiguration;
+import com.sergiomartinrubio.transactionsservice.acceptancetests.CucumberSpringContextConfiguration;
 import com.sergiomartinrubio.transactionsservice.model.*;
 import com.sergiomartinrubio.transactionsservice.repository.TransactionRepository;
 import com.sergiomartinrubio.transactionsservice.service.TransactionService;
