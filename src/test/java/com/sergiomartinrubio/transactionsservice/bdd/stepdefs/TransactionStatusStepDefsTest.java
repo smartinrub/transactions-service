@@ -74,7 +74,7 @@ public class TransactionStatusStepDefsTest extends CucumberSpringContextConfigur
     }
 
     @After
-    public void setup() {
+    public void teardown() {
         transactionRepository.deleteAll();
     }
 
