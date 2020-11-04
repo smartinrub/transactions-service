@@ -86,7 +86,7 @@ class TransactionControllerTest {
         when(transactionService.findByIban(ACCOUNT_IBAN, null)).thenReturn(List.of(TRANSACTION));
 
         // WHEN
-        MvcResult result = mockMvc.perform(get("/transactions/" + ACCOUNT_IBAN))
+        MvcResult result = mockMvc.perform(get("/transactions?accountIban=" + ACCOUNT_IBAN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
